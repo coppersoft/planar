@@ -67,14 +67,27 @@ extern struct Custom custom;
 */
 static UWORD __chip copperlist[] = {
 
-    COP_MOVE(FMODE,   0), // set fetch mode = 0
+    COP_MOVE(FMODE,   0), // set fetch mode = 0 (slow fetch mode for AGA compatibility)
     COP_MOVE(DDFSTRT, DDFSTRT_VALUE),
     COP_MOVE(DDFSTOP, DDFSTOP_VALUE),
     COP_MOVE(DIWSTRT, DIWSTRT_VALUE),
     COP_MOVE(DIWSTOP, DIWSTOP_VALUE_PAL),
     COP_MOVE(BPLCON0, BPLCON0_5BPP_COMPOSITE_COLOR),
+
+    // Bitplane modulos, zero in our very simple case.
     COP_MOVE(BPL1MOD, 0),
     COP_MOVE(BPL2MOD, 0),
+    // Bitplane pointers.
+    COP_MOVE(BPL1PTH, 0),
+    COP_MOVE(BPL1PTL, 0),
+    COP_MOVE(BPL2PTH, 0),
+    COP_MOVE(BPL2PTL, 0),
+    COP_MOVE(BPL3PTH, 0),
+    COP_MOVE(BPL3PTL, 0),
+    COP_MOVE(BPL4PTH, 0),
+    COP_MOVE(BPL4PTL, 0),
+    COP_MOVE(BPL5PTH, 0),
+    COP_MOVE(BPL5PTL, 0),
     COP_MOVE(COLOR00, 0x000),
     0x7c07, 0xfffe,            // wait for 1/3 (0x07, 0x7c)
     COP_MOVE(COLOR00, 0xf00),
