@@ -14,6 +14,7 @@
 #include <clib/intuition_protos.h>
 #include <clib/graphics_protos.h>
 #include <graphics/gfxbase.h>
+#include "ahpc_registers.h"
 
 /*
 
@@ -31,10 +32,18 @@
 // L'input handler del sistema operativo gira a priorità 20, quindi se lo settiamo a 20
 // entrambi i task avranno cicli CPU e potremmo continuare a ricevere input da tastiera
 #define TASK_PRIORITY           (20)
-#define COLOR00                 (0x180)
-#define BPLCON0                 (0x100)
 #define PRA_FIR0_BIT            (1 << 6)
-#define BPLCON0_COMPOSITE_COLOR (1 << 9)
+
+// 5 bitplanes, composite color.
+#define BPLCON0_5BPP_COMPOSITE_COLOR 0x5200
+
+// Diwstart e stop
+#define DIWSTRT_VALUE      0x2c81
+#define DIWSTOP_VALUE_PAL  0x2cc1
+
+// Data fetch
+#define DDFSTRT_VALUE      0x0038
+#define DDFSTOP_VALUE      0x00d0
 
 // copper instruction macros
 #define COP_MOVE(addr, data) addr, data
@@ -56,8 +65,16 @@ extern struct Custom custom;
 
 
 */
-static UWORD __chip coplist_pal[] = {
-    COP_MOVE(BPLCON0, BPLCON0_COMPOSITE_COLOR),
+static UWORD __chip copperlist[] = {
+
+    COP_MOVE(FMODE,   0), // set fetch mode = 0
+    COP_MOVE(DDFSTRT, DDFSTRT_VALUE),
+    COP_MOVE(DDFSTOP, DDFSTOP_VALUE),
+    COP_MOVE(DIWSTRT, DIWSTRT_VALUE),
+    COP_MOVE(DIWSTOP, DIWSTOP_VALUE_PAL),
+    COP_MOVE(BPLCON0, BPLCON0_5BPP_COMPOSITE_COLOR),
+    COP_MOVE(BPL1MOD, 0),
+    COP_MOVE(BPL2MOD, 0),
     COP_MOVE(COLOR00, 0x000),
     0x7c07, 0xfffe,            // wait for 1/3 (0x07, 0x7c)
     COP_MOVE(COLOR00, 0xf00),
@@ -66,15 +83,6 @@ static UWORD __chip coplist_pal[] = {
     COP_WAIT_END
 };
 
-static UWORD __chip coplist_ntsc[] = {
-    COP_MOVE(BPLCON0, BPLCON0_COMPOSITE_COLOR),
-    COP_MOVE(COLOR00, 0x000),
-    0x6607, 0xfffe,
-    COP_MOVE(COLOR00, 0xf00),
-    0xb607, 0xfffe,
-    COP_MOVE(COLOR00, 0xff0),
-    COP_WAIT_END
-};
 /*
     3:00
     Questa funzione rende il display disponibile al nostro programma e determina se siamo
@@ -147,7 +155,7 @@ int main(int argc, char **argv)
         Settiamo il puntatore alla copperlist1, usiamo anche qui la variabile "custom" che
         il compilatore ci fornisce per accedere ai registri custom
     */
-    custom.cop1lc = (ULONG) (is_pal ? coplist_pal : coplist_ntsc);
+    custom.cop1lc = (ULONG) copperlist;
     waitmouse();  // replace with logic
     reset_display();
     return 0;
