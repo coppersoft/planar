@@ -37,6 +37,8 @@
 // 5 bitplanes, composite color.
 #define BPLCON0_5BPP_COMPOSITE_COLOR 0x5200
 
+#define GRAPHICS_BPLS_SIZE   (40*256)*5
+
 // Diwstart e stop
 #define DIWSTRT_VALUE      0x2c81
 #define DIWSTOP_VALUE_PAL  0x2cc1
@@ -165,11 +167,22 @@ int main(int argc, char **argv)
     printf("PAL display: %d\n", is_pal);
 
     /*
+        Prendo un blocco di memoria libero in CHIP e lo pulisco con AllocMem
+
+        http://amigadev.elowar.com/read/ADCD_2.1/Includes_and_Autodocs_2._guide/node024B.html
+    */
+    UBYTE   *bitplanes;
+    bitplanes = AllocMem(GRAPHICS_BPLS_SIZE,MEMF_CHIP|MEMF_CLEAR);
+
+
+
+    /*
         Settiamo il puntatore alla copperlist1, usiamo anche qui la variabile "custom" che
         il compilatore ci fornisce per accedere ai registri custom
     */
     custom.cop1lc = (ULONG) copperlist;
     waitmouse();  // replace with logic
     reset_display();
+    FreeMem(bitplanes,GRAPHICS_BPLS_SIZE);
     return 0;
 }
