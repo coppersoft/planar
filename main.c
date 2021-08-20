@@ -76,7 +76,7 @@ static UWORD __chip copperlist[] = {
     COP_MOVE(DIWSTOP, DIWSTOP_VALUE_PAL),
     COP_MOVE(BPLCON0, BPLCON0_5BPP_COMPOSITE_COLOR),
 
-    // Bitplane modulos, zero in our very simple case.
+    // Bitplane modulos, interleaved, quindi 40 byte * 5-1 bitplane
     COP_MOVE(BPL1MOD, 40*4),
     COP_MOVE(BPL2MOD, 40*4),
     // Bitplane pointers.
@@ -101,11 +101,13 @@ static UWORD __chip copperlist[] = {
 	0x01b0,0x0777,0x01b2,0x0888,0x01b4,0x0999,0x01b6,0x0aaa,
 	0x01b8,0x0ccc,0x01ba,0x0ddd,0x01bc,0x0eee,0x01be,0x0fff,
 
+/*
     COP_MOVE(COLOR00, 0x000),
     0x7c07, 0xfffe,            // wait for 1/3 (0x07, 0x7c)
     COP_MOVE(COLOR00, 0xf00),
     0xda07, 0xfffe,            // wait for 2/3 (0x07, 0xda)
     COP_MOVE(COLOR00, 0xff0),
+*/
     COP_WAIT_END
 };
 
