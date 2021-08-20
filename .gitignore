@@ -54,3 +54,5 @@ Thumbs.db
 *.exe
 *.uaem
 *.info
+*.out
+*.o

@@ -15,6 +15,7 @@
 #include <clib/graphics_protos.h>
 #include <graphics/gfxbase.h>
 #include "utils/ahpc_registers.h"
+#include "putils.h"
 
 /*
 
@@ -180,7 +181,7 @@ void waitmouse(void)
     UWORD* BPL1PTH_addr -> Puntatore al valore in coppertlist di BPL1PTH
     int    bpl_number   -> Numero bitplane da puntare
 */
-void point_bitplanes (UBYTE* bitplanes, UWORD* BPL1PTH_addr, int bpl_number) {
+/* void point_bitplanes (UBYTE* bitplanes, UWORD* BPL1PTH_addr, int bpl_number) {
     int coplist_idx = BPL1PTH_VALUE_IDX;
     ULONG addr;
     int bplptr_offset = 0;
@@ -190,7 +191,7 @@ void point_bitplanes (UBYTE* bitplanes, UWORD* BPL1PTH_addr, int bpl_number) {
             BPL1PTH_addr[bplptr_offset + 2] = addr & 0xffff;
             bplptr_offset += 4; // next bitplane
     }
-}
+} */
 
 
 
