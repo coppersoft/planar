@@ -51,6 +51,9 @@
 #define COP_MOVE(addr, data) addr, data
 #define COP_WAIT_END  0xffff, 0xfffe
 
+// Indici array copperlist
+#define BPL1PTH_VALUE_IDX (17)
+
 extern struct GfxBase *GfxBase;
 extern struct Custom custom;
 
@@ -160,6 +163,20 @@ void waitmouse(void)
     while ((*ciaa_pra & PRA_FIR0_BIT) != 0) ;
 }
 
+/*
+    TODO: Aggiungere l'indirizzo del primo BPLPTH
+*/
+void point_bitplanes (UBYTE* bitplanes, int bpl_number) {
+    int coplist_idx = BPL1PTH_VALUE_IDX;
+    ULONG addr;
+    for (int i = 0; i < bpl_number; i++) {
+            addr = (ULONG) &(bitplanes[i * 40]);
+            copperlist[coplist_idx] = (addr >> 16) & 0xffff;
+            copperlist[coplist_idx + 2] = addr & 0xffff;
+            coplist_idx += 4; // next bitplane
+    }
+}
+
 int main(int argc, char **argv)
 {
     SetTaskPri(FindTask(NULL), TASK_PRIORITY);
@@ -174,7 +191,7 @@ int main(int argc, char **argv)
     UBYTE   *bitplanes;
     bitplanes = AllocMem(GRAPHICS_BPLS_SIZE,MEMF_CHIP|MEMF_CLEAR);
 
-
+    point_bitplanes(bitplanes,5);
 
     /*
         Settiamo il puntatore alla copperlist1, usiamo anche qui la variabile "custom" che
