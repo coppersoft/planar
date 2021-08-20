@@ -15,7 +15,7 @@
 #include <clib/graphics_protos.h>
 #include <graphics/gfxbase.h>
 #include "utils/ahpc_registers.h"
-#include "putils.h"
+#include "utils/putils.h"
 
 /*
 
