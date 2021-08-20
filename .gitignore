@@ -52,3 +52,5 @@ Thumbs.db
 
 .vscode/
 *.exe
+*.uaem
+*.info

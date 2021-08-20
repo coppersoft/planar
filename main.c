@@ -66,9 +66,6 @@ extern struct Custom custom;
 
     http://amiga-dev.wikidot.com/hardware:bplcon0  (bit 9, infatti vedi BPLCON0_COMPOSITE_COLOR)
 
-    
-
-
 */
 static UWORD __chip copperlist[] = {
 
@@ -80,8 +77,8 @@ static UWORD __chip copperlist[] = {
     COP_MOVE(BPLCON0, BPLCON0_5BPP_COMPOSITE_COLOR),
 
     // Bitplane modulos, zero in our very simple case.
-    COP_MOVE(BPL1MOD, 0),
-    COP_MOVE(BPL2MOD, 0),
+    COP_MOVE(BPL1MOD, 40*4),
+    COP_MOVE(BPL2MOD, 40*4),
     // Bitplane pointers.
     COP_MOVE(BPL1PTH, 0),
     COP_MOVE(BPL1PTL, 0),
@@ -177,6 +174,8 @@ void point_bitplanes (UBYTE* bitplanes, int bpl_number) {
     }
 }
 
+
+
 int main(int argc, char **argv)
 {
     SetTaskPri(FindTask(NULL), TASK_PRIORITY);
@@ -192,6 +191,21 @@ int main(int argc, char **argv)
     bitplanes = AllocMem(GRAPHICS_BPLS_SIZE,MEMF_CHIP|MEMF_CLEAR);
 
     point_bitplanes(bitplanes,5);
+
+    /*for (int i = 0; i < 40*256; i++) {
+        bitplanes[i] = 123;
+    }*/
+
+    /*
+        Leggo il file nella memoria allocata
+    */
+    FILE *fp = fopen("Pic.raw", "rb");
+    if (fp) {
+        fread(bitplanes, sizeof(unsigned char), 51200, fp);
+    } else {
+        printf("ratr0_read_tilesheet() error: file '%s' not found\n", "Pic.raw");
+        return 0;
+    }
 
     /*
         Settiamo il puntatore alla copperlist1, usiamo anche qui la variabile "custom" che
