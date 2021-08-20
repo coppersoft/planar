@@ -174,16 +174,21 @@ void waitmouse(void)
 }
 
 /*
-    TODO: Aggiungere l'indirizzo del primo BPLPTH
+    Funzione generica di puntamento bitplane
+
+    UBYTE* bitplanes    -> Il puntatore ai bitplane
+    UWORD* BPL1PTH_addr -> Puntatore al valore in coppertlist di BPL1PTH
+    int    bpl_number   -> Numero bitplane da puntare
 */
-void point_bitplanes (UBYTE* bitplanes, int bpl_number) {
+void point_bitplanes (UBYTE* bitplanes, UWORD* BPL1PTH_addr, int bpl_number) {
     int coplist_idx = BPL1PTH_VALUE_IDX;
     ULONG addr;
+    int bplptr_offset = 0;
     for (int i = 0; i < bpl_number; i++) {
             addr = (ULONG) &(bitplanes[i * 40]);
-            copperlist[coplist_idx] = (addr >> 16) & 0xffff;
-            copperlist[coplist_idx + 2] = addr & 0xffff;
-            coplist_idx += 4; // next bitplane
+            BPL1PTH_addr[bplptr_offset] = (addr >> 16) & 0xffff;
+            BPL1PTH_addr[bplptr_offset + 2] = addr & 0xffff;
+            bplptr_offset += 4; // next bitplane
     }
 }
 
@@ -203,7 +208,7 @@ int main(int argc, char **argv)
     UBYTE   *bitplanes;
     bitplanes = AllocMem(GRAPHICS_BPLS_SIZE,MEMF_CHIP|MEMF_CLEAR);
 
-    point_bitplanes(bitplanes,5);
+    point_bitplanes(bitplanes,&copperlist[BPL1PTH_VALUE_IDX],5);
 
     /*for (int i = 0; i < 40*256; i++) {
         bitplanes[i] = 123;
