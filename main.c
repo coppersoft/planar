@@ -14,7 +14,7 @@
 #include <clib/intuition_protos.h>
 #include <clib/graphics_protos.h>
 #include <graphics/gfxbase.h>
-#include "ahpc_registers.h"
+#include "utils/ahpc_registers.h"
 
 /*
 
