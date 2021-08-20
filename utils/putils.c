@@ -1,11 +1,11 @@
 #include "putils.h"
 
-/*
+/**
     Funzione generica di puntamento bitplane
 
-    UBYTE* bitplanes    -> Il puntatore ai bitplane
-    UWORD* BPL1PTH_addr -> Puntatore al valore in coppertlist di BPL1PTH
-    int    bpl_number   -> Numero bitplane da puntare
+    @param UBYTE* bitplanes    -> Il puntatore ai bitplane
+    @param UWORD* BPL1PTH_addr -> Puntatore al valore in coppertlist di BPL1PTH
+    @param int    bpl_number   -> Numero bitplane da puntare
 */
 void point_bitplanes (UBYTE* bitplanes, UWORD* BPL1PTH_addr, int bpl_number) {
     ULONG addr;
