@@ -289,6 +289,8 @@ int main(int argc, char **argv)
 
     simple_blit(normal_block,bitplanes,16,5);
 
+    //copy_mem(normal_block,bitplanes,48,0);
+
 
     for (int x = 0; x < 320; x++) {
         set_sprite_pos(paddle_data, x, paddle_y, paddle_height);

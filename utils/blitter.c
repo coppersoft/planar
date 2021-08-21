@@ -11,7 +11,7 @@ void simple_blit(UBYTE* source, UBYTE* dest, int rows, int bitplanes) {
        9 = 1001: abilito solo i canali A e D
        f0 = minterm, copia semplice
     */
-    custom.bltcon0 = 0x9f00;    // dff040
+    custom.bltcon0 = 0x09f0;    // dff040
     custom.bltcon1 = 0x0;       // dff042
 
     custom.bltapt = source;
