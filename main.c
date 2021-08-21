@@ -16,6 +16,7 @@
 #include <graphics/gfxbase.h>
 #include "utils/ahpc_registers.h"
 #include "utils/bitplanes.h"
+#include "utils/sprites.h"
 
 /*
 
@@ -125,11 +126,7 @@ static UWORD __chip copperlist[] = {
 };
 
 
-// Dati null per sprite inutilizzati, stessa cosa faceva photon
-static UWORD __chip NULL_SPRITE_DATA[] = {
-    0x0000, 0x0000,
-    0x0000, 0x0000
-};
+
 
 
 static UWORD __chip paddle_data[] = {
