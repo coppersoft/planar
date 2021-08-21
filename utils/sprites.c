@@ -25,7 +25,7 @@ void point_sprite(UWORD* SPRxPTH_addr, UWORD* sprite_data) {
 }
 
 
-void set_sprite_pos(UWORD *sprite_data, UWORD hstart, UWORD vstart, UWORD height)
+void set_sprite_pos_raw(UWORD *sprite_data, UWORD hstart, UWORD vstart, UWORD height)
 {
     UWORD vstop = vstart + height;
     sprite_data[0] = ((vstart & 0xff) << 8) | ((hstart >> 1) & 0xff);
@@ -35,4 +35,11 @@ void set_sprite_pos(UWORD *sprite_data, UWORD hstart, UWORD vstart, UWORD height
         ((vstop >> 8) & 1) << 1 |   // vstop high bit
         (hstart & 1) |              // hstart low bit
         sprite_data[1] & 0x80;      // preserve attach bit
+}
+
+void set_sprite_pos(UWORD *sprite_data, UWORD hstart, UWORD vstart, UWORD height)
+{
+    hstart += 128;
+    vstart += 44;   // 0x2c, vedi DIWSTRT
+    set_sprite_pos_raw(sprite_data,hstart,vstart,height);
 }

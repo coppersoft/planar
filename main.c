@@ -261,7 +261,7 @@ int main(int argc, char **argv)
 
     // and set the sprite position
     //UWORD paddle_x = 10+44, paddle_y = 10+128, paddle_height = 16;
-    UWORD paddle_x = 125, paddle_y = 41, paddle_height = 16;
+    UWORD paddle_x = 125, paddle_y = 0, paddle_height = 16;
     set_sprite_pos(paddle_data, paddle_x, paddle_y, paddle_height);
 
 
@@ -271,7 +271,7 @@ int main(int argc, char **argv)
     */
     custom.cop1lc = (ULONG) copperlist;
 
-    for (int x = 125; x < 400; x++) {
+    for (int x = 0; x < 320; x++) {
         set_sprite_pos(paddle_data, x, paddle_y, paddle_height);
         wait_vblank();
     }
