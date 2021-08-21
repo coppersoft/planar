@@ -287,7 +287,7 @@ int main(int argc, char **argv)
 
     // Si parte
 
-    simple_blit(normal_block,bitplanes,16,5);
+    simple_blit(normal_block,bitplanes,1,16,5);
 
     //copy_mem(normal_block,bitplanes,48,0);
 

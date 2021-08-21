@@ -4,7 +4,7 @@
 
 extern struct Custom custom;
 
-void simple_blit(UBYTE* source, UBYTE* dest, int rows, int bitplanes) {
+void simple_blit(UBYTE* source, UBYTE* dest, int words, int rows, int bitplanes) {
     OwnBlitter();
     WaitBlit();
     /* 0 = shift nullo
@@ -21,7 +21,7 @@ void simple_blit(UBYTE* source, UBYTE* dest, int rows, int bitplanes) {
     custom.bltalwm = 0xffff;
 
     custom.bltamod = 0;         // Modulo 0 in A
-    custom.bltdmod = 39;
+    custom.bltdmod = 40 - (words*2);
 
     custom.bltsize = (UWORD) ((rows*bitplanes) << 6) | 1;
     DisownBlitter();
