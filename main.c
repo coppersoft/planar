@@ -132,6 +132,28 @@ static UWORD __chip NULL_SPRITE_DATA[] = {
 };
 
 
+static UWORD __chip paddle_data[] = {
+	0x0000,0x0000,
+	0x0000,0x0000,
+	0x0000,0x0000,
+	0x03c0,0x0000,
+	0x0c00,0x03f0,
+	0x1000,0x0ff8,
+	0x1180,0x0ff8,
+	0x2244,0x1ffc,
+	0x2424,0x1fdc,
+	0x2424,0x1fdc,
+	0x2244,0x1fbc,
+	0x0188,0x1e78,
+	0x0008,0x1ff8,
+	0x0030,0x0ff0,
+	0x03c0,0x03c0,
+	0x0000,0x0000,
+	0x0000,0x0000,
+	0x0000,0x0000,
+};
+
+
 /*
     3:00
     Questa funzione rende il display disponibile al nostro programma e determina se siamo
@@ -213,7 +235,16 @@ void waitmouse(void)
     }
 } */
 
-
+static void set_sprite_pos(UWORD *sprite_data, UWORD hstart, UWORD vstart, UWORD vstop)
+{
+    sprite_data[0] = ((vstart & 0xff) << 8) | ((hstart >> 1) & 0xff);
+    // vstop + high bit of vstart + low bit of hstart
+    sprite_data[1] = ((vstop & 0xff) << 8) |  // vstop 8 low bits
+        ((vstart >> 8) & 1) << 2 |  // vstart high bit
+        ((vstop >> 8) & 1) << 1 |   // vstop high bit
+        (hstart & 1) |              // hstart low bit
+        sprite_data[1] & 0x80;      // preserve attach bit
+}
 
 int main(int argc, char **argv)
 {
@@ -256,9 +287,14 @@ int main(int argc, char **argv)
         copperlist[SPR0PTH_VALUE_IDX + i * 4 + 2] = ((ULONG) NULL_SPRITE_DATA) & 0xffff;
     }
 
+    // Set SPRITE DATA START
+    // now point sprite 0 to the nemo data
+    copperlist[SPR0PTH_VALUE_IDX] = (((ULONG) paddle_data) >> 16) & 0xffff;
+    copperlist[SPR0PTH_VALUE_IDX+ 2] = ((ULONG) paddle_data) & 0xffff;
 
-
-
+    // and set the sprite position
+    UWORD paddle_x = 180, paddle_y = 160, paddle_height = 16;
+    set_sprite_pos(paddle_data, paddle_x, paddle_y, paddle_y + paddle_height);
 
     /*
         Settiamo il puntatore alla copperlist1, usiamo anche qui la variabile "custom" che
