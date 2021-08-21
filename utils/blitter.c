@@ -40,4 +40,47 @@ void simple_blit(UBYTE* source, UBYTE* dest, int words, int rows, int bitplanes)
 void masked_blit(UBYTE* source, UBYTE* dest, UBYTE* mask, UBYTE* background, int x, int y, int words, int rows, int bitplanes) {
     OwnBlitter();
     WaitBlit();
+
+    int shift = x & 0xf;
+    int horiz_bytes_offset = (x >> 4)*2;
+
+    UWORD   bltcon0_value = 0x0fe2;     // 0 shift momentaneamente, f tutti i canali
+                                        // e2 i minterm per cookie cut
+    UWORD   bltcon1_value = 0x0;
+
+    shift = shift << 12;
+
+    bltcon0_value |= shift;
+	bltcon1_value |= shift;
+
+    custom.bltcon0 = bltcon0_value;
+    custom.bltcon1 = bltcon1_value;
+
+    custom.bltafwm = 0xffff;    // Maschere
+    custom.bltalwm = 0xffff;
+
+    custom.bltapt = source;
+    custom.bltbpt = mask;
+
+    int bytes_offset = ((40*y)*bitplanes)+horiz_bytes_offset;
+
+    // ?????
+
+    dest += bytes_offset;
+    background += bytes_offset;
+
+    custom.bltcpt = background;
+    custom.bltdpt = dest;
+
+    custom.bltamod = 0;
+    custom.bltbmod = 0;
+
+    int moduloc = 40 - (words*2);       // Al momento cablo 40
+    int modulod = moduloc;              // Al momento è uguale
+
+    custom.bltcmod = moduloc;
+    custom.bltdmod = modulod;
+
+    custom.bltsize = (UWORD) ((rows*bitplanes) << 6) | words;
+    DisownBlitter();
 }
