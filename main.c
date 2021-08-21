@@ -53,7 +53,7 @@
 #define COP_WAIT_END  0xffff, 0xfffe
 
 // Indici array copperlist
-#define BPL1PTH_VALUE_IDX (17)
+#define BPL1PTH_VALUE_IDX (49)
 
 extern struct GfxBase *GfxBase;
 extern struct Custom custom;
@@ -71,6 +71,16 @@ extern struct Custom custom;
 static UWORD __chip copperlist[] = {
 
     COP_MOVE(FMODE,   0), // set fetch mode = 0 (slow fetch mode for AGA compatibility)
+
+    COP_MOVE(SPR0PTH, 0), COP_MOVE(SPR0PTL, 0),     // Sprites
+    COP_MOVE(SPR1PTH, 0), COP_MOVE(SPR1PTL, 0),
+    COP_MOVE(SPR2PTH, 0), COP_MOVE(SPR2PTL, 0),
+    COP_MOVE(SPR3PTH, 0), COP_MOVE(SPR3PTL, 0),
+    COP_MOVE(SPR4PTH, 0), COP_MOVE(SPR4PTL, 0),
+    COP_MOVE(SPR5PTH, 0), COP_MOVE(SPR5PTL, 0),
+    COP_MOVE(SPR6PTH, 0), COP_MOVE(SPR6PTL, 0),
+    COP_MOVE(SPR7PTH, 0), COP_MOVE(SPR7PTL, 0),
+
     COP_MOVE(DDFSTRT, DDFSTRT_VALUE),
     COP_MOVE(DDFSTOP, DDFSTOP_VALUE),
     COP_MOVE(DIWSTRT, DIWSTRT_VALUE),
@@ -97,7 +107,7 @@ static UWORD __chip copperlist[] = {
 	0x0188,0x0d80,0x018a,0x0fe0,0x018c,0x08f0,0x018e,0x0080,
 	0x0190,0x00b6,0x0192,0x00dd,0x0194,0x00af,0x0196,0x007c,
 	0x0198,0x000f,0x019a,0x070f,0x019c,0x0c0e,0x019e,0x0c08,
-	0x01a0,0x0620,0x01a2,0x0e52,0x01a4,0x0a52,0x01a6,0x0fca,
+	0x01a0,0x0620,0x01a2,0x00cf,0x01a4,0x006c,0x01a6,0x0029,
 	0x01a8,0x0333,0x01aa,0x0444,0x01ac,0x0555,0x01ae,0x0666,
 	0x01b0,0x0777,0x01b2,0x0888,0x01b4,0x0999,0x01b6,0x0aaa,
 	0x01b8,0x0ccc,0x01ba,0x0ddd,0x01bc,0x0eee,0x01be,0x0fff,
