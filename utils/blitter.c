@@ -4,6 +4,16 @@
 
 extern struct Custom custom;
 
+/**
+ *  Semplice funzione di blitting A -> D senza cookie cut
+ *  ATTENZIONE: Al momento assume che la larghezza dei bitplane sia di 40 byte (320px)
+ * 
+ *  @param  UBYTE* source       -> Indirizzo sorgente
+ *  @param  UBYTE* dest         -> Indirizzo destinazione
+ *  @param  int    words        -> Larghezza in words della sorgente 
+ *  @param  int    rows         -> Numero di righe della sorgente
+ *  @param  int    bitplanes    -> Numero bitplanes
+ */
 void simple_blit(UBYTE* source, UBYTE* dest, int words, int rows, int bitplanes) {
     OwnBlitter();
     WaitBlit();
@@ -23,6 +33,6 @@ void simple_blit(UBYTE* source, UBYTE* dest, int words, int rows, int bitplanes)
     custom.bltamod = 0;         // Modulo 0 in A
     custom.bltdmod = 40 - (words*2);
 
-    custom.bltsize = (UWORD) ((rows*bitplanes) << 6) | 1;
+    custom.bltsize = (UWORD) ((rows*bitplanes) << 6) | words;
     DisownBlitter();
 }
