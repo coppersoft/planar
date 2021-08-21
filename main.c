@@ -54,6 +54,8 @@
 
 // Indici array copperlist
 #define BPL1PTH_VALUE_IDX (49)
+#define SPR0PTH_VALUE_IDX (3)   
+
 
 extern struct GfxBase *GfxBase;
 extern struct Custom custom;
@@ -121,6 +123,14 @@ static UWORD __chip copperlist[] = {
 */
     COP_WAIT_END
 };
+
+
+// Dati null per sprite inutilizzati, stessa cosa faceva photon
+static UWORD __chip NULL_SPRITE_DATA[] = {
+    0x0000, 0x0000,
+    0x0000, 0x0000
+};
+
 
 /*
     3:00
@@ -235,6 +245,20 @@ int main(int argc, char **argv)
         printf("ratr0_read_tilesheet() error: file '%s' not found\n", "Pic.raw");
         return 0;
     }
+
+    /*
+        SPRITES
+    */
+
+    // Punto gli sprite 0-7 a null
+    for (int i = 0; i < 8; i++) {
+        copperlist[SPR0PTH_VALUE_IDX + i * 4] = (((ULONG) NULL_SPRITE_DATA) >> 16) & 0xffff;
+        copperlist[SPR0PTH_VALUE_IDX + i * 4 + 2] = ((ULONG) NULL_SPRITE_DATA) & 0xffff;
+    }
+
+
+
+
 
     /*
         Settiamo il puntatore alla copperlist1, usiamo anche qui la variabile "custom" che
