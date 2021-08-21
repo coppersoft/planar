@@ -36,3 +36,7 @@ void simple_blit(UBYTE* source, UBYTE* dest, int words, int rows, int bitplanes)
     custom.bltsize = (UWORD) ((rows*bitplanes) << 6) | words;
     DisownBlitter();
 }
+
+void masked_blit(UBYTE* source, UBYTE* dest, UBYTE* mask, int x, int y, int words, int rows, int bitplanes) {
+    
+}
