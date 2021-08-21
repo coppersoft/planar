@@ -310,7 +310,7 @@ int main(int argc, char **argv)
 
     //copy_mem(normal_block,bitplanes,48,0);
 
-    masked_blit(explosion1,bitplanes,explosion1_mask,bitplanes,50,50,3,32,5);
+    masked_blit(explosion1,bitplanes,explosion1_mask,bitplanes,5,5,3,32,5);
 
     for (int x = 0; x < 320; x++) {
         set_sprite_pos(paddle_data, x, paddle_y, paddle_height);
