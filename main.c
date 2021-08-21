@@ -18,6 +18,7 @@
 #include "utils/bitplanes.h"
 #include "utils/sprites.h"
 #include "utils/vblank.h"
+#include "utils/blitter.h"
 
 /*
 
@@ -41,6 +42,7 @@
 #define BPLCON0_5BPP_COMPOSITE_COLOR 0x5200
 
 #define GRAPHICS_BPLS_SIZE   (40*256)*5
+#define BLOCK_SIZE           (2*16*5)
 
 // Diwstart e stop
 #define DIWSTRT_VALUE      0x2c81
@@ -228,6 +230,10 @@ int main(int argc, char **argv)
     UBYTE   *bitplanes;
     bitplanes = AllocMem(GRAPHICS_BPLS_SIZE,MEMF_CHIP|MEMF_CLEAR);
 
+    UBYTE   *normal_block;
+    normal_block = AllocMem(BLOCK_SIZE,MEMF_CHIP|MEMF_CLEAR);
+
+
     point_bitplanes(bitplanes,&copperlist[BPL1PTH_VALUE_IDX],5);
 
     /*for (int i = 0; i < 40*256; i++) {
@@ -241,7 +247,15 @@ int main(int argc, char **argv)
     if (fp) {
         fread(bitplanes, sizeof(unsigned char), 51200, fp);
     } else {
-        printf("ratr0_read_tilesheet() error: file '%s' not found\n", "Pic.raw");
+        printf("error: file '%s' not found\n", "Pic.raw");
+        return 0;
+    }
+
+    FILE *fp_block = fopen("normal_block.raw", "rb");
+    if (fp_block) {
+        fread(normal_block, sizeof(unsigned char), BLOCK_SIZE, fp_block);
+    } else {
+        printf("error: file '%s' not found\n", "normal_block.raw");
         return 0;
     }
 
@@ -271,6 +285,11 @@ int main(int argc, char **argv)
     */
     custom.cop1lc = (ULONG) copperlist;
 
+    // Si parte
+
+    simple_blit(normal_block,bitplanes,16,5);
+
+
     for (int x = 0; x < 320; x++) {
         set_sprite_pos(paddle_data, x, paddle_y, paddle_height);
         wait_vblank();
@@ -279,5 +298,6 @@ int main(int argc, char **argv)
     waitmouse();  // replace with logic
     reset_display();
     FreeMem(bitplanes,GRAPHICS_BPLS_SIZE);
+    FreeMem(normal_block,BLOCK_SIZE);
     return 0;
 }
