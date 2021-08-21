@@ -213,36 +213,6 @@ void waitmouse(void)
     while ((*ciaa_pra & PRA_FIR0_BIT) != 0) ;
 }
 
-/*
-    Funzione generica di puntamento bitplane
-
-    UBYTE* bitplanes    -> Il puntatore ai bitplane
-    UWORD* BPL1PTH_addr -> Puntatore al valore in coppertlist di BPL1PTH
-    int    bpl_number   -> Numero bitplane da puntare
-*/
-/* void point_bitplanes (UBYTE* bitplanes, UWORD* BPL1PTH_addr, int bpl_number) {
-    int coplist_idx = BPL1PTH_VALUE_IDX;
-    ULONG addr;
-    int bplptr_offset = 0;
-    for (int i = 0; i < bpl_number; i++) {
-            addr = (ULONG) &(bitplanes[i * 40]);
-            BPL1PTH_addr[bplptr_offset] = (addr >> 16) & 0xffff;
-            BPL1PTH_addr[bplptr_offset + 2] = addr & 0xffff;
-            bplptr_offset += 4; // next bitplane
-    }
-} */
-
-static void set_sprite_pos(UWORD *sprite_data, UWORD hstart, UWORD vstart, UWORD vstop)
-{
-    sprite_data[0] = ((vstart & 0xff) << 8) | ((hstart >> 1) & 0xff);
-    // vstop + high bit of vstart + low bit of hstart
-    sprite_data[1] = ((vstop & 0xff) << 8) |  // vstop 8 low bits
-        ((vstart >> 8) & 1) << 2 |  // vstart high bit
-        ((vstop >> 8) & 1) << 1 |   // vstop high bit
-        (hstart & 1) |              // hstart low bit
-        sprite_data[1] & 0x80;      // preserve attach bit
-}
-
 int main(int argc, char **argv)
 {
     SetTaskPri(FindTask(NULL), TASK_PRIORITY);
@@ -289,8 +259,9 @@ int main(int argc, char **argv)
     point_sprite(&copperlist[SPR0PTH_VALUE_IDX],paddle_data);
 
     // and set the sprite position
-    UWORD paddle_x = 180, paddle_y = 160, paddle_height = 16;
-    set_sprite_pos(paddle_data, paddle_x, paddle_y, paddle_y + paddle_height);
+    //UWORD paddle_x = 10+44, paddle_y = 10+128, paddle_height = 16;
+    UWORD paddle_x = 125, paddle_y = 41, paddle_height = 16;
+    set_sprite_pos(paddle_data, paddle_x, paddle_y, paddle_height);
 
     /*
         Settiamo il puntatore alla copperlist1, usiamo anche qui la variabile "custom" che
