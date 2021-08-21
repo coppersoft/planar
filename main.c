@@ -17,6 +17,7 @@
 #include "utils/ahpc_registers.h"
 #include "utils/bitplanes.h"
 #include "utils/sprites.h"
+#include "utils/vblank.h"
 
 /*
 
@@ -263,11 +264,18 @@ int main(int argc, char **argv)
     UWORD paddle_x = 125, paddle_y = 41, paddle_height = 16;
     set_sprite_pos(paddle_data, paddle_x, paddle_y, paddle_height);
 
+
     /*
         Settiamo il puntatore alla copperlist1, usiamo anche qui la variabile "custom" che
         il compilatore ci fornisce per accedere ai registri custom
     */
     custom.cop1lc = (ULONG) copperlist;
+
+    for (int x = 125; x < 400; x++) {
+        set_sprite_pos(paddle_data, x, paddle_y, paddle_height);
+        wait_vblank();
+    }
+
     waitmouse();  // replace with logic
     reset_display();
     FreeMem(bitplanes,GRAPHICS_BPLS_SIZE);
