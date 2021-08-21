@@ -5,3 +5,5 @@ static UWORD __chip NULL_SPRITE_DATA[] = {
     0x0000, 0x0000,
     0x0000, 0x0000
 };
+
+void reset_sprites(UWORD* SPR0PTH_addr);

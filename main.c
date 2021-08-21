@@ -279,10 +279,7 @@ int main(int argc, char **argv)
     */
 
     // Punto gli sprite 0-7 a null
-    for (int i = 0; i < 8; i++) {
-        copperlist[SPR0PTH_VALUE_IDX + i * 4] = (((ULONG) NULL_SPRITE_DATA) >> 16) & 0xffff;
-        copperlist[SPR0PTH_VALUE_IDX + i * 4 + 2] = ((ULONG) NULL_SPRITE_DATA) & 0xffff;
-    }
+    reset_sprites(&copperlist[SPR0PTH_VALUE_IDX]);
 
     // Set SPRITE DATA START
     // now point sprite 0 to the nemo data
