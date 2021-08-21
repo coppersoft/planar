@@ -43,6 +43,7 @@
 
 #define GRAPHICS_BPLS_SIZE   (40*256)*5
 #define BLOCK_SIZE           (2*16*5)
+#define EXPLOSION_FRAME_SIZE (4*32*5)
 
 // Diwstart e stop
 #define DIWSTRT_VALUE      0x2c81
@@ -233,12 +234,13 @@ int main(int argc, char **argv)
     UBYTE   *normal_block;
     normal_block = AllocMem(BLOCK_SIZE,MEMF_CHIP|MEMF_CLEAR);
 
+    UBYTE   *explosion1;
+    explosion1 = AllocMem(EXPLOSION_FRAME_SIZE,MEMF_CHIP|MEMF_CLEAR);
+
+    UBYTE   *explosion1_mask;
+    explosion1_mask = AllocMem(EXPLOSION_FRAME_SIZE,MEMF_CHIP|MEMF_CLEAR);
 
     point_bitplanes(bitplanes,&copperlist[BPL1PTH_VALUE_IDX],5);
-
-    /*for (int i = 0; i < 40*256; i++) {
-        bitplanes[i] = 123;
-    }*/
 
     /*
         Leggo il file nella memoria allocata
@@ -256,6 +258,22 @@ int main(int argc, char **argv)
         fread(normal_block, sizeof(unsigned char), BLOCK_SIZE, fp_block);
     } else {
         printf("error: file '%s' not found\n", "normal_block.raw");
+        return 0;
+    }
+
+    FILE *fp_explosion = fopen("Explosion.raw", "rb");
+    if (fp_explosion) {
+        fread(explosion1, sizeof(unsigned char), EXPLOSION_FRAME_SIZE, fp_explosion);
+    } else {
+        printf("error: file '%s' not found\n", "Explosion.raw");
+        return 0;
+    }
+
+    FILE *fp_explosion1_mask = fopen("Explosion_mask.raw", "rb");
+    if (fp_explosion1_mask) {
+        fread(explosion1_mask, sizeof(unsigned char), EXPLOSION_FRAME_SIZE, fp_explosion1_mask);
+    } else {
+        printf("error: file '%s' not found\n", "Explosion_mask.raw");
         return 0;
     }
 
@@ -301,5 +319,7 @@ int main(int argc, char **argv)
     reset_display();
     FreeMem(bitplanes,GRAPHICS_BPLS_SIZE);
     FreeMem(normal_block,BLOCK_SIZE);
+    FreeMem(explosion1,BLOCK_SIZE);
+    FreeMem(explosion1_mask,BLOCK_SIZE);
     return 0;
 }
