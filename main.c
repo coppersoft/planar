@@ -41,9 +41,10 @@
 // 5 bitplanes, composite color.
 #define BPLCON0_5BPP_COMPOSITE_COLOR 0x5200
 
+// Assets sizes in bytes
 #define GRAPHICS_BPLS_SIZE   (40*256)*5
 #define BLOCK_SIZE           (2*16*5)
-#define EXPLOSION_FRAME_SIZE (4*32*5)
+#define EXPLOSION_FRAME_SIZE (6*32*5)   // larghezza 48 px (32 + 16 padding), altezza 32 righe
 
 // Diwstart e stop
 #define DIWSTRT_VALUE      0x2c81
