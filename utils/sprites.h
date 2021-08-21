@@ -7,3 +7,4 @@ static UWORD __chip NULL_SPRITE_DATA[] = {
 };
 
 void reset_sprites(UWORD* SPR0PTH_addr);
+void point_sprite(UWORD* SPRxPTH_addr, UWORD* sprite_data);

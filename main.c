@@ -283,8 +283,10 @@ int main(int argc, char **argv)
 
     // Set SPRITE DATA START
     // now point sprite 0 to the nemo data
-    copperlist[SPR0PTH_VALUE_IDX] = (((ULONG) paddle_data) >> 16) & 0xffff;
-    copperlist[SPR0PTH_VALUE_IDX+ 2] = ((ULONG) paddle_data) & 0xffff;
+    //copperlist[SPR0PTH_VALUE_IDX] = (((ULONG) paddle_data) >> 16) & 0xffff;
+    //copperlist[SPR0PTH_VALUE_IDX+ 2] = ((ULONG) paddle_data) & 0xffff;
+
+    point_sprite(&copperlist[SPR0PTH_VALUE_IDX],paddle_data);
 
     // and set the sprite position
     UWORD paddle_x = 180, paddle_y = 160, paddle_height = 16;

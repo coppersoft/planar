@@ -12,3 +12,11 @@ void reset_sprites(UWORD* SPR0PTH_addr) {
         SPR0PTH_addr[i*4+2] = ((ULONG) NULL_SPRITE_DATA) & 0xffff;
     }
 }
+
+void point_sprite(UWORD* SPRxPTH_addr, UWORD* sprite_data) {
+    SPRxPTH_addr[0] = ((ULONG)sprite_data >> 16) & 0xffff;
+    SPRxPTH_addr[2] = (ULONG)sprite_data & 0xffff;
+
+    //copperlist[SPR0PTH_VALUE_IDX] = (((ULONG) paddle_data) >> 16) & 0xffff;
+    //copperlist[SPR0PTH_VALUE_IDX+ 2] = ((ULONG) paddle_data) & 0xffff;
+}
