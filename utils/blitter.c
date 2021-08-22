@@ -1,6 +1,7 @@
 #include "blitter.h"
 #include <clib/graphics_protos.h>
 #include <hardware/custom.h>
+#include "disk.h"
 
 extern struct Custom custom;
 
@@ -83,4 +84,32 @@ void masked_blit(UBYTE* source, UBYTE* dest, UBYTE* mask, UBYTE* background, int
 
     custom.bltsize = (UWORD) ((rows*bitplanes) << 6) | words;
     DisownBlitter();
+}
+
+BlitterBob init_bob(char* img_file, char* mask_file, int words, int rows, int bitplanes) {
+    BlitterBob newbob;
+
+    newbob.header.bitplanes = bitplanes;
+    newbob.header.firstdraw = 1;
+    newbob.header.rows = rows;
+    newbob.header.words = words;
+
+    size_t size = (words*2)*rows*bitplanes;
+
+    newbob.imgdata = alloc_and_load_asset(size,img_file);
+    newbob.mask = alloc_and_load_asset(size,mask_file);
+
+    return newbob;
+}
+
+void draw_bob(BlitterBob* bob,UBYTE* dest, int x,int y) {
+    if(!(bob->header.firstdraw)) {
+        // TODO: Ripristinare lo sfondo con una bella blittata partendo dagli x e y attuali prima dello
+        //       spostamento
+    }
+    bob->header.x = x;
+    bob->header.y = y;
+    bob->header.firstdraw = 0;
+    
+    masked_blit(bob->imgdata,dest,bob->mask,dest,x,y,bob->header.words,bob->header.rows,bob->header.bitplanes);
 }

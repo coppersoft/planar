@@ -7,16 +7,18 @@ struct BobHeader {
     WORD    x;
     WORD    y;
     BOOL    firstdraw;
-    UBYTE   height;
-    UBYTE   width;
-    char*   filename;
-    char*   mask_filename;
+    UBYTE   rows;
+    UBYTE   words;
+    UBYTE   bitplanes;
 };
 
 // Non ho potuto chiamarlo Bob perché è già definito nell'NDK in graphics/gel.h (139)
-struct BlitterBob {
+typedef struct BlitterBob {
     struct  BobHeader header;
     UBYTE*  imgdata;
     UBYTE*  mask;
-    UBYTE*  background;
-};
+    UBYTE*  prev_background;
+} BlitterBob;
+
+BlitterBob init_bob(char* img_file, char* mask_file, int words, int rows, int bitplanes);
+void draw_bob(BlitterBob* bob,UBYTE* dest, int x,int y);

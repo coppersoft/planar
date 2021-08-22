@@ -266,6 +266,11 @@ int main(int argc, char **argv)
 
     masked_blit(explosion1,bitplanes,explosion1_mask,bitplanes,5,5,3,32,5);
 
+    // Provo coi bob
+
+    BlitterBob miobob = init_bob("Explosion.raw","Explosion_mask.raw",3,32,5);
+    draw_bob(&miobob,bitplanes,100,100);
+
     for (int x = 0; x < 320; x++) {
         set_sprite_pos(paddle_data, x, paddle_y, paddle_height);
         wait_vblank();
