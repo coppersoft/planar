@@ -13,7 +13,7 @@ struct BobHeader {
     char*   mask_filename;
 };
 
-// Non ho potuto chiamarlo Bob perché è già definito nell'NKD in graphics/gel.h (139)
+// Non ho potuto chiamarlo Bob perché è già definito nell'NDK in graphics/gel.h (139)
 struct BlitterBob {
     struct  BobHeader header;
     UBYTE*  imgdata;
