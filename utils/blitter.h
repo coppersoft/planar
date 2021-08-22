@@ -22,3 +22,4 @@ typedef struct BlitterBob {
 
 BlitterBob init_bob(char* img_file, char* mask_file, int words, int rows, int bitplanes);
 void draw_bob(BlitterBob* bob,UBYTE* dest, int x,int y);
+void free_bob(BlitterBob bob);

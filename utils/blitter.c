@@ -113,3 +113,9 @@ void draw_bob(BlitterBob* bob,UBYTE* dest, int x,int y) {
     
     masked_blit(bob->imgdata,dest,bob->mask,dest,x,y,bob->header.words,bob->header.rows,bob->header.bitplanes);
 }
+
+void free_bob(BlitterBob bob) {
+    size_t size = (bob.header.words*2)*bob.header.rows*bob.header.bitplanes;
+    FreeMem (bob.imgdata,size);
+    FreeMem (bob.mask,size);
+}
