@@ -2,8 +2,8 @@ CC=vc +kick13
 CFLAGS=-I$(NDK_INC) -c99 -O2
 LDFLAGS=-lamiga -lauto
 
-all: bitplanes sprites blitter vblank
-	$(CC) $(CFLAGS) $(LDFLAGS) bitplanes.o sprites.o vblank.o blitter.o main.c -o main.exe
+all: bitplanes sprites blitter vblank disk
+	$(CC) $(CFLAGS) $(LDFLAGS) bitplanes.o sprites.o vblank.o blitter.o disk.o main.c -o main.exe
 
 # -c è "do not link", salva come .o
 bitplanes:
@@ -17,6 +17,10 @@ vblank:
 
 blitter:
 	$(CC) $(CFLAGS) $(LDFLAGS) ./utils/blitter.c -c -o blitter.o
+
+disk:
+	$(CC) $(CFLAGS) $(LDFLAGS) ./utils/disk.c -c -o disk.o
+
 clean:
 	rm *.o
 	rm main.exe

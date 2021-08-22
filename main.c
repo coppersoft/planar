@@ -19,6 +19,7 @@
 #include "utils/sprites.h"
 #include "utils/vblank.h"
 #include "utils/blitter.h"
+#include "utils/disk.h"
 
 /*
 
@@ -229,54 +230,12 @@ int main(int argc, char **argv)
 
         http://amigadev.elowar.com/read/ADCD_2.1/Includes_and_Autodocs_2._guide/node024B.html
     */
-    UBYTE   *bitplanes;
-    bitplanes = AllocMem(GRAPHICS_BPLS_SIZE,MEMF_CHIP|MEMF_CLEAR);
-
-    UBYTE   *normal_block;
-    normal_block = AllocMem(BLOCK_SIZE,MEMF_CHIP|MEMF_CLEAR);
-
-    UBYTE   *explosion1;
-    explosion1 = AllocMem(EXPLOSION_FRAME_SIZE,MEMF_CHIP|MEMF_CLEAR);
-
-    UBYTE   *explosion1_mask;
-    explosion1_mask = AllocMem(EXPLOSION_FRAME_SIZE,MEMF_CHIP|MEMF_CLEAR);
+    UBYTE   *bitplanes = alloc_and_load_asset(GRAPHICS_BPLS_SIZE,"Pic.raw");
+    UBYTE   *normal_block = alloc_and_load_asset(BLOCK_SIZE,"normal_block.raw");
+    UBYTE   *explosion1 = alloc_and_load_asset(EXPLOSION_FRAME_SIZE,"Explosion.raw");
+    UBYTE   *explosion1_mask = alloc_and_load_asset(EXPLOSION_FRAME_SIZE,"Explosion_mask.raw");
 
     point_bitplanes(bitplanes,&copperlist[BPL1PTH_VALUE_IDX],5);
-
-    /*
-        Leggo il file nella memoria allocata
-    */
-    FILE *fp = fopen("Pic.raw", "rb");
-    if (fp) {
-        fread(bitplanes, sizeof(unsigned char), 51200, fp);
-    } else {
-        printf("error: file '%s' not found\n", "Pic.raw");
-        return 0;
-    }
-
-    FILE *fp_block = fopen("normal_block.raw", "rb");
-    if (fp_block) {
-        fread(normal_block, sizeof(unsigned char), BLOCK_SIZE, fp_block);
-    } else {
-        printf("error: file '%s' not found\n", "normal_block.raw");
-        return 0;
-    }
-
-    FILE *fp_explosion = fopen("Explosion.raw", "rb");
-    if (fp_explosion) {
-        fread(explosion1, sizeof(unsigned char), EXPLOSION_FRAME_SIZE, fp_explosion);
-    } else {
-        printf("error: file '%s' not found\n", "Explosion.raw");
-        return 0;
-    }
-
-    FILE *fp_explosion1_mask = fopen("Explosion_mask.raw", "rb");
-    if (fp_explosion1_mask) {
-        fread(explosion1_mask, sizeof(unsigned char), EXPLOSION_FRAME_SIZE, fp_explosion1_mask);
-    } else {
-        printf("error: file '%s' not found\n", "Explosion_mask.raw");
-        return 0;
-    }
 
     /*
         SPRITES
@@ -284,11 +243,6 @@ int main(int argc, char **argv)
 
     // Punto gli sprite 0-7 a null
     reset_sprites(&copperlist[SPR0PTH_VALUE_IDX]);
-
-    // Set SPRITE DATA START
-    // now point sprite 0 to the nemo data
-    //copperlist[SPR0PTH_VALUE_IDX] = (((ULONG) paddle_data) >> 16) & 0xffff;
-    //copperlist[SPR0PTH_VALUE_IDX+ 2] = ((ULONG) paddle_data) & 0xffff;
 
     point_sprite(&copperlist[SPR0PTH_VALUE_IDX],paddle_data);
 
