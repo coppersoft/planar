@@ -262,8 +262,6 @@ int main(int argc, char **argv)
 
     simple_blit(normal_block,bitplanes,1,16,5);
 
-    //copy_mem(normal_block,bitplanes,48,0);
-
     masked_blit(explosion1,bitplanes,explosion1_mask,bitplanes,5,5,3,32,5);
 
     // Provo coi bob
