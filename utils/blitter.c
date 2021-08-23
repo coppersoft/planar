@@ -98,6 +98,7 @@ BlitterBob init_bob(char* img_file, char* mask_file, int words, int rows, int bi
 
     newbob.imgdata = alloc_and_load_asset(size,img_file);
     newbob.mask = alloc_and_load_asset(size,mask_file);
+    newbob.prev_background = AllocMem(size,MEMF_CHIP|MEMF_CLEAR);
 
     return newbob;
 }
@@ -118,4 +119,5 @@ void free_bob(BlitterBob bob) {
     size_t size = (bob.header.words*2)*bob.header.rows*bob.header.bitplanes;
     FreeMem (bob.imgdata,size);
     FreeMem (bob.mask,size);
+    FreeMem (bob.prev_background,size);
 }
