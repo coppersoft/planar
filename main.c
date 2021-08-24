@@ -276,16 +276,29 @@ int main(int argc, char **argv)
 
     BlitterBob miobob = init_bob("Explosion.raw","Explosion_mask.raw",3,32,5);
 
-    draw_bob(&miobob,bitplanes,20,20);
+    //draw_bob(&miobob,bitplanes,20,20);
 
-    waitfire();
+    //waitfire();
 
-    draw_bob(&miobob,bitplanes,50,20);
+    //draw_bob(&miobob,bitplanes,50,20);
 
-    /*for (int x = 0; x < 20; x++) {
+    
+
+for (int x = 15; x < 18; x++) {
+        printf("======= Sto per disegnare bob x %d\n",x);
         draw_bob(&miobob,bitplanes,x,10);
         wait_vblank();
-    }*/
+        wait_vblank();
+        wait_vblank();
+        wait_vblank();
+        wait_vblank();
+        wait_vblank();
+        wait_vblank();
+        wait_vblank();
+        wait_vblank();
+        wait_vblank();
+        waitfire();
+}
 
     // Inizio test copia incolla col blitter
     UBYTE* backup = AllocMem(4*32*5,MEMF_CHIP|MEMF_CLEAR);

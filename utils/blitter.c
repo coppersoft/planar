@@ -65,6 +65,8 @@ void masked_blit(UBYTE* source, UBYTE* dest, UBYTE* mask, UBYTE* background, int
 
     int bytes_offset = ((40*y)*bitplanes)+horiz_bytes_offset;
 
+    
+
     // ?????
 
     dest += bytes_offset;
@@ -84,6 +86,7 @@ void masked_blit(UBYTE* source, UBYTE* dest, UBYTE* mask, UBYTE* background, int
 
     custom.bltsize = (UWORD) ((rows*bitplanes) << 6) | words;
     DisownBlitter();
+    printf("blitto, offset %d\n",bytes_offset);
 }
 
 BlitterBob init_bob(char* img_file, char* mask_file, int words, int rows, int bitplanes) {
@@ -107,18 +110,18 @@ BlitterBob init_bob(char* img_file, char* mask_file, int words, int rows, int bi
     TODO: Generalizzare il 40!!!
 */
 static int getOffset(BlitterBob* bob) {
-    printf("getoffset:\n");
+    //printf("getoffset:\n");
     int y = bob->header.y;
     int x = bob->header.x;
     int bitplanes = bob->header.bitplanes;
 
-    printf("x: %d\n",x);
-    printf("y: %d\n",y);
-    printf("bitplanes: %d\n",bitplanes);
+    //printf("x: %d\n",x);
+    //printf("y: %d\n",y);
+    //printf("bitplanes: %d\n",bitplanes);
 
     int offset = y*40*bitplanes;
     offset += (x>> 4)*2;
-    printf("Valore calcolato dentro getoffset %d\n",offset);
+    //printf("Valore calcolato dentro getoffset %d\n",offset);
     return offset;
 }
 
@@ -126,15 +129,19 @@ static void save_background(BlitterBob* bob,UBYTE* source) {
     
     source+=getOffset(bob);
 
+    printf("save_background, offset %d\n",getOffset(bob));
+
     int words = bob->header.words;
     int rows = bob->header.rows;
     int bitplanes = bob->header.bitplanes;
 
+/*
     printf("save_background \n");
     printf("words: %d\n",words);
     printf("rows: %d\n",rows);
     printf("bitplanes: %d\n",bitplanes);
     printf("offset: %d\n",getOffset(bob));
+    */
 
     OwnBlitter();
     WaitBlit();
@@ -164,14 +171,14 @@ void draw_bob(BlitterBob* bob,UBYTE* screen, int x,int y) {
 
     // Se non è la primissima blittata ripristino lo sfondo
     if(!(bob->header.firstdraw)) {
-        printf("draw_bob: firstdraw false, ripristino lo sfondo\n");
         // TODO: Ripristinare lo sfondo con una bella blittata partendo dagli x e y attuali prima dello
         //       spostamento
         UBYTE* dest_ripristino = screen;
         dest_ripristino += getOffset(bob);
+        printf("Ripristino sfondo con x %d, offset: %d\n",bob->header.x, getOffset(bob));
         simple_blit(bob->prev_background,dest_ripristino,bob->header.words,bob->header.rows,bob->header.bitplanes);
     } else {
-        printf("draw_bob: firstdraw true\n");
+        printf("Primo disegno, nessun ripristino\n");
         bob->header.x = x;
         bob->header.y = y;
     }
