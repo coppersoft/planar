@@ -18,6 +18,7 @@ typedef struct BlitterBob {
     UBYTE*  imgdata;
     UBYTE*  mask;
     UBYTE*  prev_background;
+    int     prev_background_offset;
 } BlitterBob;
 
 BlitterBob init_bob(char* img_file, char* mask_file, int words, int rows, int bitplanes);

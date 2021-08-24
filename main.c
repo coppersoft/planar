@@ -284,18 +284,9 @@ int main(int argc, char **argv)
 
     
 
-for (int x = 15; x < 18; x++) {
-        printf("======= Sto per disegnare bob x %d\n",x);
+for (int x = 0; x < 280; x++) {
+        //printf("======= Sto per disegnare bob x %d\n",x);
         draw_bob(&miobob,bitplanes,x,10);
-        wait_vblank();
-        wait_vblank();
-        wait_vblank();
-        wait_vblank();
-        wait_vblank();
-        wait_vblank();
-        wait_vblank();
-        wait_vblank();
-        wait_vblank();
         wait_vblank();
         waitfire();
 }
