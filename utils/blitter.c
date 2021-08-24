@@ -103,16 +103,86 @@ BlitterBob init_bob(char* img_file, char* mask_file, int words, int rows, int bi
     return newbob;
 }
 
-void draw_bob(BlitterBob* bob,UBYTE* dest, int x,int y) {
+/*
+    TODO: Generalizzare il 40!!!
+*/
+static int getOffset(BlitterBob* bob) {
+    printf("getoffset:\n");
+    int y = bob->header.y;
+    int x = bob->header.x;
+    int bitplanes = bob->header.bitplanes;
+
+    printf("x: %d\n",x);
+    printf("y: %d\n",y);
+    printf("bitplanes: %d\n",bitplanes);
+
+    int offset = y*40*bitplanes;
+    offset += (x>> 4)*2;
+    printf("Valore calcolato dentro getoffset %d\n",offset);
+    return offset;
+}
+
+static void save_background(BlitterBob* bob,UBYTE* source) {
+    
+    source+=getOffset(bob);
+
+    int words = bob->header.words;
+    int rows = bob->header.rows;
+    int bitplanes = bob->header.bitplanes;
+
+    printf("save_background \n");
+    printf("words: %d\n",words);
+    printf("rows: %d\n",rows);
+    printf("bitplanes: %d\n",bitplanes);
+    printf("offset: %d\n",getOffset(bob));
+
+    OwnBlitter();
+    WaitBlit();
+    /* 0 = shift nullo
+       9 = 1001: abilito solo i canali A e D
+       f0 = minterm, copia semplice
+    */
+    custom.bltcon0 = 0x09f0;    // dff040
+    custom.bltcon1 = 0x0;       // dff042
+
+    custom.bltapt = source;
+    custom.bltdpt = bob->prev_background;
+
+    custom.bltafwm = 0xffff;    // Maschere
+    custom.bltalwm = 0xffff;
+
+    custom.bltamod = 40 - (words*2);           // Modulo 0 in A
+    custom.bltdmod = 0;
+
+    custom.bltsize = (UWORD) ((rows*5) << 6) | words;
+    DisownBlitter();
+}
+
+
+
+void draw_bob(BlitterBob* bob,UBYTE* screen, int x,int y) {
+
+    // Se non è la primissima blittata ripristino lo sfondo
     if(!(bob->header.firstdraw)) {
+        printf("draw_bob: firstdraw false, ripristino lo sfondo\n");
         // TODO: Ripristinare lo sfondo con una bella blittata partendo dagli x e y attuali prima dello
         //       spostamento
+        UBYTE* dest_ripristino = screen;
+        dest_ripristino += getOffset(bob);
+        simple_blit(bob->prev_background,dest_ripristino,bob->header.words,bob->header.rows,bob->header.bitplanes);
+    } else {
+        printf("draw_bob: firstdraw true\n");
+        bob->header.x = x;
+        bob->header.y = y;
     }
+
+    save_background(bob,screen);
+
     bob->header.x = x;
     bob->header.y = y;
     bob->header.firstdraw = 0;
     
-    masked_blit(bob->imgdata,dest,bob->mask,dest,x,y,bob->header.words,bob->header.rows,bob->header.bitplanes);
+    masked_blit(bob->imgdata,screen,bob->mask,screen,x,y,bob->header.words,bob->header.rows,bob->header.bitplanes);
 }
 
 void free_bob(BlitterBob bob) {
@@ -121,3 +191,4 @@ void free_bob(BlitterBob bob) {
     FreeMem (bob.mask,size);
     FreeMem (bob.prev_background,size);
 }
+
