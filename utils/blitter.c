@@ -89,6 +89,44 @@ void masked_blit(UBYTE* source, UBYTE* dest, UBYTE* mask, UBYTE* background, int
     //printf("blitto, offset %d\n",bytes_offset);
 }
 
+/**
+ * Crea maschera da un bob interleaved
+ */
+static UBYTE* createMask(unsigned char* bob,int bitplanes, int rows, int words) {
+    size_t size = ((words*2)*rows*bitplanes);
+
+    UBYTE* mask = AllocMem(size,MEMF_CHIP|MEMF_CLEAR);
+    UBYTE* work = AllocMem(words*2,MEMF_CHIP|MEMF_CLEAR);
+
+    int mask_idx = 0;
+    int bp_idx = 0;
+    for (int r = 0; r < rows; r++) {
+        // Creo la riga r-esima della maschera
+        
+        for (int bp = 0; bp < bitplanes; bp++) {
+            for (int bt = 0; bt < words*2; bt++) {
+                work[bt] |= bob[bp_idx++];
+            }
+        }
+        // Copio la riga nella maschera per tutti i bitplane
+        
+        for (int i = 0; i < bitplanes; i++) {
+            for (int w = 0; w < words*2; w++) {
+                mask[mask_idx++] = work[w];
+            }
+        }
+
+        // Pulisco la maschera di lavoro
+        for (int i=0; i < words*2; i++) {
+            work[i] = 0;
+        }
+
+    }
+    FreeMem(work,words*2);
+    return mask;
+}
+
+
 BlitterBob init_bob(char* img_file, char* mask_file, int words, int rows, int bitplanes) {
     BlitterBob newbob;
 
@@ -100,7 +138,9 @@ BlitterBob init_bob(char* img_file, char* mask_file, int words, int rows, int bi
     size_t size = (words*2)*rows*bitplanes;
 
     newbob.imgdata = alloc_and_load_asset(size,img_file);
-    newbob.mask = alloc_and_load_asset(size,mask_file);
+    //newbob.mask = alloc_and_load_asset(size,mask_file);
+
+    newbob.mask = createMask(newbob.imgdata,newbob.header.bitplanes,newbob.header.rows,newbob.header.words);
     newbob.prev_background = AllocMem(size,MEMF_CHIP|MEMF_CLEAR);
 
     return newbob;
