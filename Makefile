@@ -2,8 +2,8 @@ CC=vc +kick13
 CFLAGS=-I$(NDK_INC) -c99 -O2
 LDFLAGS=-lamiga -lauto
 
-all: bitplanes sprites blitter vblank disk input
-	$(CC) $(CFLAGS) $(LDFLAGS) bitplanes.o sprites.o vblank.o blitter.o disk.o input.o main.c -o main.exe
+all: bitplanes sprites blitter vblank disk input debug
+	$(CC) $(CFLAGS) $(LDFLAGS) bitplanes.o sprites.o vblank.o blitter.o disk.o input.o debug.o main.c -o main.exe
 
 # -c è "do not link", salva come .o
 bitplanes:
@@ -23,6 +23,9 @@ disk:
 
 input:
 	$(CC) $(CFLAGS) $(LDFLAGS) ./utils/input.c -c -o input.o
+
+debug:
+	$(CC) $(CFLAGS) $(LDFLAGS) ./utils/debug.c -c -o debug.o
 
 clean:
 	rm *.o

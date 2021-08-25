@@ -21,6 +21,7 @@
 #include "utils/blitter.h"
 #include "utils/disk.h"
 #include "utils/input.h"
+#include "utils/debug.h"
 
 /*
 
@@ -38,7 +39,7 @@
 // L'input handler del sistema operativo gira a priorità 20, quindi se lo settiamo a 20
 // entrambi i task avranno cicli CPU e potremmo continuare a ricevere input da tastiera
 #define TASK_PRIORITY           (20)
-#define PRA_FIR0_BIT            (1 << 6)
+
 
 // 5 bitplanes, composite color.
 #define BPLCON0_5BPP_COMPOSITE_COLOR 0x5200
@@ -264,20 +265,25 @@ int main(int argc, char **argv)
 
     // Si parte
 
-    //simple_blit(normal_block,bitplanes,1,16,5);
-
-    
-
-    //masked_blit(explosion1,bitplanes,explosion1_mask,bitplanes,5,5,3,32,5);
-
     BlitterBob miobob = init_bob("Explosion.raw",3,32,5);
 
     BlitterBob dino = init_bob("dino.raw",3,32,5);
 
-    for (int x = 0; x < 280; x++) {
+    for (int x = 0; x < 200; x++) {
             //printf("======= Sto per disegnare bob x %d\n",x);
-            draw_bob(&miobob,bitplanes,x,10);
-            draw_bob(&dino,bitplanes,280-x,15);
+            restore_background(&miobob,bitplanes);
+            restore_background(&dino,bitplanes);
+
+            miobob.header.x = 200 -x ;
+            miobob.header.y = 10;
+            dino.header.x = x;
+            dino.header.y = 20;
+            save_background(&miobob,bitplanes);
+            save_background(&dino,bitplanes);
+
+            draw_bob(&miobob,bitplanes,200 - x,10);
+            draw_bob(&dino,bitplanes,x,20);
+
             wait_vblank();
             waitfire();
     }
