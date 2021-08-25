@@ -264,21 +264,23 @@ int main(int argc, char **argv)
 
     // Si parte
 
-    simple_blit(normal_block,bitplanes,1,16,5);
+    //simple_blit(normal_block,bitplanes,1,16,5);
 
     
 
-    masked_blit(explosion1,bitplanes,explosion1_mask,bitplanes,5,5,3,32,5);
+    //masked_blit(explosion1,bitplanes,explosion1_mask,bitplanes,5,5,3,32,5);
 
-    BlitterBob miobob = init_bob("Explosion.raw","Explosion_mask.raw",3,32,5);
+    BlitterBob miobob = init_bob("Explosion.raw",3,32,5);
 
+    BlitterBob dino = init_bob("dino.raw",3,32,5);
 
-for (int x = 0; x < 280; x++) {
-        //printf("======= Sto per disegnare bob x %d\n",x);
-        draw_bob(&miobob,bitplanes,x,10);
-        wait_vblank();
-        waitfire();
-}
+    for (int x = 0; x < 280; x++) {
+            //printf("======= Sto per disegnare bob x %d\n",x);
+            draw_bob(&miobob,bitplanes,x,10);
+            draw_bob(&dino,bitplanes,280-x,15);
+            wait_vblank();
+            waitfire();
+    }
 
     waitmouse();  // replace with logic
     reset_display();

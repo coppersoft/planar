@@ -21,7 +21,7 @@ typedef struct BlitterBob {
     int     prev_background_offset;
 } BlitterBob;
 
-BlitterBob init_bob(char* img_file, char* mask_file, int words, int rows, int bitplanes);
+BlitterBob init_bob(char* img_file, int words, int rows, int bitplanes);
 void draw_bob(BlitterBob* bob,UBYTE* screen, int x,int y);
 void free_bob(BlitterBob bob);
 
