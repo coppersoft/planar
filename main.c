@@ -270,19 +270,8 @@ int main(int argc, char **argv)
 
     masked_blit(explosion1,bitplanes,explosion1_mask,bitplanes,5,5,3,32,5);
 
-    // Provo coi bob
-
-
-
     BlitterBob miobob = init_bob("Explosion.raw","Explosion_mask.raw",3,32,5);
 
-    //draw_bob(&miobob,bitplanes,20,20);
-
-    //waitfire();
-
-    //draw_bob(&miobob,bitplanes,50,20);
-
-    
 
 for (int x = 0; x < 280; x++) {
         //printf("======= Sto per disegnare bob x %d\n",x);
@@ -290,43 +279,6 @@ for (int x = 0; x < 280; x++) {
         wait_vblank();
         waitfire();
 }
-
-    // Inizio test copia incolla col blitter
-    UBYTE* backup = AllocMem(4*32*5,MEMF_CHIP|MEMF_CLEAR);
-
-    int words = 2;
-    int rows = 32;
-
-    OwnBlitter();
-    WaitBlit();
-    /* 0 = shift nullo
-       9 = 1001: abilito solo i canali A e D
-       f0 = minterm, copia semplice
-    */
-    custom.bltcon0 = 0x09f0;    // dff040
-    custom.bltcon1 = 0x0;       // dff042
-
-    custom.bltapt = bitplanes;
-    custom.bltdpt = backup;
-
-    custom.bltafwm = 0xffff;    // Maschere
-    custom.bltalwm = 0xffff;
-
-    custom.bltamod = 40 - (words*2);         // Modulo 0 in A
-    custom.bltdmod = 0;
-
-    //custom.bltsize = (UWORD) ((bob->header.rows * bob->header.bitplanes) << 6) | bob->header.words;
-    custom.bltsize = (UWORD) ((rows*5) << 6) | words;
-    DisownBlitter();
-
-
-
-
-    simple_blit(backup,bitplanes+((40*5)*50),2,32,5);
-
-    // Fine test copia incolla col blitter
-
-
 
     waitmouse();  // replace with logic
     reset_display();
