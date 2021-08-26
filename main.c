@@ -134,9 +134,6 @@ static UWORD __chip copperlist[] = {
 };
 
 
-
-
-
 static UWORD __chip paddle_data[] = {
 	0x0000,0x0000,
 	0x0000,0x0000,
@@ -158,6 +155,7 @@ static UWORD __chip paddle_data[] = {
 	0x0000,0x0000,
 };
 
+    BobList bobList;
 
 /*
     3:00
@@ -221,8 +219,6 @@ void waitmouse(void)
     while ((*ciaa_pra & PRA_FIR0_BIT) != 0) ;
 }
 
-//static void 
-
 
 int main(int argc, char **argv)
 {
@@ -250,9 +246,7 @@ int main(int argc, char **argv)
     reset_sprites(&copperlist[SPR0PTH_VALUE_IDX]);
 
     point_sprite(&copperlist[SPR0PTH_VALUE_IDX],paddle_data);
-
-    // and set the sprite position
-    //UWORD paddle_x = 10+44, paddle_y = 10+128, paddle_height = 16;
+    
     UWORD paddle_x = 125, paddle_y = 0, paddle_height = 16;
     set_sprite_pos(paddle_data, paddle_x, paddle_y, paddle_height);
 
