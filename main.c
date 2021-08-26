@@ -269,6 +269,8 @@ int main(int argc, char **argv)
 
     BlitterBob dino = init_bob("dino.raw",3,32,5,0,0);
 
+    BlitterBob dino2 = init_bob("dino.raw",3,32,5,0,0);
+
     for (int x = 0; x < 200; x++) {
             //printf("======= Sto per disegnare bob x %d\n",x);
 
@@ -276,16 +278,21 @@ int main(int argc, char **argv)
             miobob.header.y = 10;
             dino.header.x = x;
             dino.header.y = 20;
+            dino2.header.x = x;
+            dino2.header.y = x;
 
             restore_background(&miobob,bitplanes);
             restore_background(&dino,bitplanes);
-
+            restore_background(&dino2,bitplanes);
+            
             
             save_background(&miobob,bitplanes);
             save_background(&dino,bitplanes);
+            save_background(&dino2,bitplanes);
 
             draw_bob(&miobob,bitplanes);
             draw_bob(&dino,bitplanes);
+            draw_bob(&dino2,bitplanes);
 
             wait_vblank();
             waitfire();
@@ -299,5 +306,6 @@ int main(int argc, char **argv)
     FreeMem(explosion1_mask,BLOCK_SIZE);
     free_bob(miobob);
     free_bob(dino);
+    free_bob(dino2);
     return 0;
 }
