@@ -127,13 +127,15 @@ static UBYTE* createMask(unsigned char* bob,int bitplanes, int rows, int words) 
 }
 
 
-BlitterBob init_bob(char* img_file, int words, int rows, int bitplanes) {
+BlitterBob init_bob(char* img_file, int words, int rows, int bitplanes, int x, int y) {
     BlitterBob newbob;
 
     newbob.header.bitplanes = bitplanes;
     newbob.header.firstdraw = 1;
     newbob.header.rows = rows;
     newbob.header.words = words;
+    newbob.header.x = x;
+    newbob.header.y = y;
 
     size_t size = (words*2)*rows*bitplanes;
 

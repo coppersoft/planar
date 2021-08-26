@@ -265,9 +265,9 @@ int main(int argc, char **argv)
 
     // Si parte
 
-    BlitterBob miobob = init_bob("Explosion.raw",3,32,5);
+    BlitterBob miobob = init_bob("Explosion.raw",3,32,5,0,0);
 
-    BlitterBob dino = init_bob("dino.raw",3,32,5);
+    BlitterBob dino = init_bob("dino.raw",3,32,5,0,0);
 
     for (int x = 0; x < 200; x++) {
             //printf("======= Sto per disegnare bob x %d\n",x);
