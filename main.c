@@ -281,8 +281,8 @@ int main(int argc, char **argv)
             save_background(&miobob,bitplanes);
             save_background(&dino,bitplanes);
 
-            draw_bob(&miobob,bitplanes,200 - x,10);
-            draw_bob(&dino,bitplanes,x,20);
+            draw_bob(&miobob,bitplanes);
+            draw_bob(&dino,bitplanes);
 
             wait_vblank();
             waitfire();

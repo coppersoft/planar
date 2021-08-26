@@ -22,7 +22,7 @@ typedef struct BlitterBob {
 } BlitterBob;
 
 BlitterBob init_bob(char* img_file, int words, int rows, int bitplanes, int x, int y);
-void draw_bob(BlitterBob* bob,UBYTE* screen, int x,int y);
+void draw_bob(BlitterBob* bob,UBYTE* screen);
 void free_bob(BlitterBob bob);
 void restore_background(BlitterBob* bob,UBYTE* screen);
 void save_background(BlitterBob* bob,UBYTE* source);

@@ -222,7 +222,7 @@ void restore_background(BlitterBob* bob,UBYTE* screen) {
     }
 }
 
-void draw_bob(BlitterBob* bob,UBYTE* screen, int x,int y) {
+void draw_bob(BlitterBob* bob,UBYTE* screen) {
 
     // Se non è la primissima blittata ripristino lo sfondo
     /*if(!(bob->header.firstdraw)) {
@@ -235,18 +235,18 @@ void draw_bob(BlitterBob* bob,UBYTE* screen, int x,int y) {
         bob->header.y = y;
     }*/
 
-    if (bob->header.firstdraw) {
+    /*if (bob->header.firstdraw) {
         bob->header.x = x;
         bob->header.y = y;
-    }
+    }*/
 
     //save_background(bob,screen);
 
-    bob->header.x = x;
-    bob->header.y = y;
+    //bob->header.x = x;
+    //bob->header.y = y;
     bob->header.firstdraw = 0;
     
-    masked_blit(bob->imgdata,screen,bob->mask,screen,x,y,bob->header.words,bob->header.rows,bob->header.bitplanes);
+    masked_blit(bob->imgdata,screen,bob->mask,screen,bob->header.x,bob->header.y,bob->header.words,bob->header.rows,bob->header.bitplanes);
 }
 
 void free_bob(BlitterBob bob) {
