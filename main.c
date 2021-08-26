@@ -295,5 +295,6 @@ int main(int argc, char **argv)
     FreeMem(explosion1,BLOCK_SIZE);
     FreeMem(explosion1_mask,BLOCK_SIZE);
     free_bob(miobob);
+    free_bob(dino);
     return 0;
 }
