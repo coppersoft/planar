@@ -259,34 +259,34 @@ int main(int argc, char **argv)
 
     // Si parte
 
-    BlitterBob miobob = init_bob("Explosion.raw",3,32,5,0,0);
+    BlitterBob* miobob = init_bob("Explosion.raw",3,32,5,0,0);
 
-    BlitterBob dino = init_bob("dino.raw",3,32,5,0,0);
+    BlitterBob* dino = init_bob("dino.raw",3,32,5,0,0);
 
-    BlitterBob dino2 = init_bob("dino.raw",3,32,5,0,0);
+    BlitterBob* dino2 = init_bob("dino.raw",3,32,5,0,0);
 
     for (int x = 0; x < 200; x++) {
             //printf("======= Sto per disegnare bob x %d\n",x);
 
-            miobob.x = 200 -x ;
-            miobob.y = 10;
-            dino.x = x;
-            dino.y = 20;
-            dino2.x = x;
-            dino2.y = x;
+            miobob->x = 200 -x ;
+            miobob->y = 10;
+            dino->x = x;
+            dino->y = 20;
+            dino2->x = x;
+            dino2->y = x;
 
-            restore_background(&miobob,bitplanes);
-            restore_background(&dino,bitplanes);
-            restore_background(&dino2,bitplanes);
+            restore_background(miobob,bitplanes);
+            restore_background(dino,bitplanes);
+            restore_background(dino2,bitplanes);
             
             
-            save_background(&miobob,bitplanes);
-            save_background(&dino,bitplanes);
-            save_background(&dino2,bitplanes);
+            save_background(miobob,bitplanes);
+            save_background(dino,bitplanes);
+            save_background(dino2,bitplanes);
 
-            draw_bob(&miobob,bitplanes);
-            draw_bob(&dino,bitplanes);
-            draw_bob(&dino2,bitplanes);
+            draw_bob(miobob,bitplanes);
+            draw_bob(dino,bitplanes);
+            draw_bob(dino2,bitplanes);
 
             wait_vblank();
             waitfire();
@@ -301,5 +301,8 @@ int main(int argc, char **argv)
     free_bob(miobob);
     free_bob(dino);
     free_bob(dino2);
+    FreeMem(miobob,sizeof(BlitterBob));
+    FreeMem(dino,sizeof(BlitterBob));
+    FreeMem(dino2,sizeof(BlitterBob));
     return 0;
 }

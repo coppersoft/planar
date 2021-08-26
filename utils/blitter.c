@@ -127,23 +127,23 @@ static UBYTE* createMask(unsigned char* bob,int bitplanes, int rows, int words) 
 }
 
 
-BlitterBob init_bob(char* img_file, int words, int rows, int bitplanes, int x, int y) {
-    BlitterBob newbob;
+BlitterBob* init_bob(char* img_file, int words, int rows, int bitplanes, int x, int y) {
+    BlitterBob* newbob = AllocMem(sizeof(BlitterBob),MEMF_CHIP|MEMF_CLEAR);
 
-    newbob.header.bitplanes = bitplanes;
-    newbob.header.firstdraw = 1;
-    newbob.header.rows = rows;
-    newbob.header.words = words;
-    newbob.x = x;
-    newbob.y = y;
+    newbob->header.bitplanes = bitplanes;
+    newbob->header.firstdraw = 1;
+    newbob->header.rows = rows;
+    newbob->header.words = words;
+    newbob->x = x;
+    newbob->y = y;
 
     size_t size = (words*2)*rows*bitplanes;
 
-    newbob.imgdata = alloc_and_load_asset(size,img_file);
+    newbob->imgdata = alloc_and_load_asset(size,img_file);
     //newbob.mask = alloc_and_load_asset(size,mask_file);
 
-    newbob.mask = createMask(newbob.imgdata,newbob.header.bitplanes,newbob.header.rows,newbob.header.words);
-    newbob.prev_background = AllocMem(size,MEMF_CHIP|MEMF_CLEAR);
+    newbob->mask = createMask(newbob->imgdata,newbob->header.bitplanes,newbob->header.rows,newbob->header.words);
+    newbob->prev_background = AllocMem(size,MEMF_CHIP|MEMF_CLEAR);
 
     return newbob;
 }
@@ -249,10 +249,10 @@ void draw_bob(BlitterBob* bob,UBYTE* screen) {
     masked_blit(bob->imgdata,screen,bob->mask,screen,bob->x,bob->y,bob->header.words,bob->header.rows,bob->header.bitplanes);
 }
 
-void free_bob(BlitterBob bob) {
-    size_t size = (bob.header.words*2)*bob.header.rows*bob.header.bitplanes;
-    FreeMem (bob.imgdata,size);
-    FreeMem (bob.mask,size);
-    FreeMem (bob.prev_background,size);
+void free_bob(BlitterBob* bob) {
+    size_t size = (bob->header.words*2)*bob->header.rows*bob->header.bitplanes;
+    FreeMem (bob->imgdata,size);
+    FreeMem (bob->mask,size);
+    FreeMem (bob->prev_background,size);
 }
 
