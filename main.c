@@ -221,7 +221,7 @@ void waitmouse(void)
     while ((*ciaa_pra & PRA_FIR0_BIT) != 0) ;
 }
 
-
+//static void 
 
 
 int main(int argc, char **argv)
@@ -271,13 +271,16 @@ int main(int argc, char **argv)
 
     for (int x = 0; x < 200; x++) {
             //printf("======= Sto per disegnare bob x %d\n",x);
-            restore_background(&miobob,bitplanes);
-            restore_background(&dino,bitplanes);
 
             miobob.header.x = 200 -x ;
             miobob.header.y = 10;
             dino.header.x = x;
             dino.header.y = 20;
+
+            restore_background(&miobob,bitplanes);
+            restore_background(&dino,bitplanes);
+
+            
             save_background(&miobob,bitplanes);
             save_background(&dino,bitplanes);
 
