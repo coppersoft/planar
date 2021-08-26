@@ -4,6 +4,61 @@
 #include "disk.h"
 
 extern struct Custom custom;
+extern BobListElement* bobList;
+
+static void addBobToList(BlitterBob* bob) {
+    //BobListElement* newElement = malloc(sizeof(BobListElement));
+
+    BobListElement* newElement = AllocMem(sizeof(BobListElement),MEMF_CHIP|MEMF_CLEAR);
+
+    //printf("Inserisco BobListElement indirizzo %p - Bob %p\n",newElement, bob);
+
+
+    newElement->bob = bob;
+    newElement->nextBob = 0;
+    if (bobList == 0) {
+        bobList = newElement;
+        return;
+    }
+
+    BobListElement* sentry = bobList;
+
+    while (sentry->nextBob != 0) {
+        sentry = sentry->nextBob;
+    }
+    sentry->nextBob = newElement;
+    return;
+}
+
+static void removeBobFromList(BlitterBob* bob) {
+    
+    if (bobList != 0) {
+        // Caso particolare, è il primo della lista
+        if (bobList->bob == bob) {
+            BobListElement* secondBobSave = bobList->nextBob; // Mi salvo il puntatore del secondo
+            FreeMem(bobList,sizeof(BobListElement));              // libero la memoria occupata dal primo elemento della lista
+            bobList = secondBobSave; // Faccio puntare l'inizio della lista all'elemento successivo
+            
+        } else {
+
+            BobListElement* actual = bobList;
+            while ((actual->nextBob->bob != bob) && actual != 0) {
+                actual = actual->nextBob;
+            }
+            BobListElement* nextBobSave = actual->nextBob->nextBob; // Mi salvo il puntatore a due più avanti
+            FreeMem(actual->nextBob,sizeof(BobListElement));        // Libero la memoria occupata dall'elemento successivo */
+            actual->nextBob = nextBobSave; // Faccio puntare l'elemento attuale a due elementi più avanti
+            
+        }
+    } else {
+        printf("ATTENZIONE: lista vuota, esco");
+        return;
+    }
+    free_bob(bob);
+}
+
+
+
 
 /**
  *  Semplice funzione di blitting A -> D senza cookie cut
@@ -125,7 +180,6 @@ static UBYTE* createMask(unsigned char* bob,int bitplanes, int rows, int words) 
     FreeMem(work,words*2);
     return mask;
 }
-
 
 BlitterBob* init_bob(char* img_file, int words, int rows, int bitplanes, int x, int y) {
     BlitterBob* newbob = AllocMem(sizeof(BlitterBob),MEMF_CHIP|MEMF_CLEAR);

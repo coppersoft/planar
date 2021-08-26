@@ -21,14 +21,14 @@ typedef struct BlitterBob {
     int     prev_background_offset;
 } BlitterBob;
 
-typedef struct BobList {
-    BlitterBob*     bob;
-    BlitterBob*     nextBob;
-} BobList;
+typedef struct BobListElement {
+    BlitterBob*                         bob;
+    struct BobListElement*       nextBob;
+} BobListElement;
 
 BlitterBob* init_bob(char* img_file, int words, int rows, int bitplanes, int x, int y);
 void draw_bob(BlitterBob* bob,UBYTE* screen);
 void free_bob(BlitterBob* bob);
 void restore_background(BlitterBob* bob,UBYTE* screen);
 void save_background(BlitterBob* bob,UBYTE* source);
-void updateAllBobs(BobList* bob_list);
+void updateAllBobs();
