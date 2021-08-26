@@ -4,8 +4,6 @@ void simple_blit(UBYTE* source, UBYTE* dest, int words, int rows, int bitplanes)
 void masked_blit(UBYTE* source, UBYTE* dest, UBYTE* mask, UBYTE* background, int x, int y, int words, int rows, int bitplanes);
 
 struct BobHeader {
-    WORD    x;
-    WORD    y;
     BOOL    firstdraw;
     UBYTE   rows;
     UBYTE   words;
@@ -15,6 +13,8 @@ struct BobHeader {
 // Non ho potuto chiamarlo Bob perché è già definito nell'NDK in graphics/gel.h (139)
 typedef struct BlitterBob {
     struct  BobHeader header;
+    WORD    x;
+    WORD    y;
     UBYTE*  imgdata;
     UBYTE*  mask;
     UBYTE*  prev_background;

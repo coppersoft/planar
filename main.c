@@ -274,12 +274,12 @@ int main(int argc, char **argv)
     for (int x = 0; x < 200; x++) {
             //printf("======= Sto per disegnare bob x %d\n",x);
 
-            miobob.header.x = 200 -x ;
-            miobob.header.y = 10;
-            dino.header.x = x;
-            dino.header.y = 20;
-            dino2.header.x = x;
-            dino2.header.y = x;
+            miobob.x = 200 -x ;
+            miobob.y = 10;
+            dino.x = x;
+            dino.y = 20;
+            dino2.x = x;
+            dino2.y = x;
 
             restore_background(&miobob,bitplanes);
             restore_background(&dino,bitplanes);

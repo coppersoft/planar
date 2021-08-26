@@ -134,8 +134,8 @@ BlitterBob init_bob(char* img_file, int words, int rows, int bitplanes, int x, i
     newbob.header.firstdraw = 1;
     newbob.header.rows = rows;
     newbob.header.words = words;
-    newbob.header.x = x;
-    newbob.header.y = y;
+    newbob.x = x;
+    newbob.y = y;
 
     size_t size = (words*2)*rows*bitplanes;
 
@@ -152,8 +152,8 @@ BlitterBob init_bob(char* img_file, int words, int rows, int bitplanes, int x, i
     TODO: Generalizzare il 40!!!
 */
 static int getOffset(BlitterBob* bob) {
-    int y = bob->header.y;
-    int x = bob->header.x;
+    int y = bob->y;
+    int x = bob->x;
     int bitplanes = bob->header.bitplanes;
 
     //printf("getoffset: x: %d - y: %d - bpl: %d\n",x,y,bitplanes);
@@ -246,7 +246,7 @@ void draw_bob(BlitterBob* bob,UBYTE* screen) {
     //bob->header.y = y;
     bob->header.firstdraw = 0;
     
-    masked_blit(bob->imgdata,screen,bob->mask,screen,bob->header.x,bob->header.y,bob->header.words,bob->header.rows,bob->header.bitplanes);
+    masked_blit(bob->imgdata,screen,bob->mask,screen,bob->x,bob->y,bob->header.words,bob->header.rows,bob->header.bitplanes);
 }
 
 void free_bob(BlitterBob bob) {
