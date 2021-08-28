@@ -268,21 +268,7 @@ int main(int argc, char **argv)
 
     BlitterBob* dino2 = init_bob("dino.raw",3,32,5,0,0);
 
-    miobob->x = 200;
-    miobob->y = 10;
-    dino->x = 20;
-    dino->y = 20;
-    dino2->x = 50;
-    dino2->y = 50;
- 
-    draw_bobs(bitplanes);
-
-    wait_vblank();
-    waitfire();
-
-
-
-    /*for (int x = 0; x < 200; x++) {
+    for (int x = 0; x < 200; x++) {
             //printf("======= Sto per disegnare bob x %d\n",x);
 
             miobob->x = 200 -x ;
@@ -296,7 +282,7 @@ int main(int argc, char **argv)
 
             wait_vblank();
             waitfire();
-    }*/
+    }
 
     waitmouse();  // replace with logic
     reset_display();

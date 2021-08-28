@@ -7,25 +7,14 @@ extern struct Custom custom;
 extern BobListElement* bobList;
 
 static void addBobToList(BlitterBob* bob) {
-
-    printf("Chiamato addBobToList\n");
-
-    //BobListElement* newElement = malloc(sizeof(BobListElement));
-
     BobListElement* newElement = AllocMem(sizeof(BobListElement),MEMF_CHIP|MEMF_CLEAR);
-
-    //printf("Inserisco BobListElement indirizzo %p - Bob %p\n",newElement, bob);
-
 
     newElement->bob = bob;
     newElement->nextBob = 0;
     if (bobList == 0) {
         bobList = newElement;
-        printf("addBobToList: bobList: %p\n",bobList);
         return;
     }
-
-    
 
     BobListElement* sentry = bobList;
 
@@ -147,7 +136,6 @@ void masked_blit(UBYTE* source, UBYTE* dest, UBYTE* mask, UBYTE* background, int
 
     custom.bltsize = (UWORD) ((rows*bitplanes) << 6) | words;
     DisownBlitter();
-    ////printf("blitto, offset %d\n",bytes_offset);
 }
 
 /**
