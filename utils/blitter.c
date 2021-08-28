@@ -334,6 +334,24 @@ void draw_bobs(UBYTE* screen) {
     } while (actual != 0);
 }
 
+/*
+    ATTENZIONE: Così sembra funzionare, ma flickera e ogni tanto "riappare lo sfondo" nel bob cancellato
+    anche se in realtà lo fa anche con quelli non cancellati.
+    
+    Tanto devo implementare il double buffer, quindi probabilmente questo problema si elimina
+    spontaneamente.
+
+    Eventualmente, implementare la cancellazione
+    come segue
+
+    - Il remove_bob non cancella fisicamente il bob, ma lo marca per essere cancellato al prossimo
+      draw_bobs
+
+    - Il draw_bobs, dopo aver ripristinato lo sfondo di tutti i bob, se il bob è marcato per essere
+      cancellato, non ne salva lo sfondo e lo cancella dalla lista alla fine di tutto i cicli
+      (o magari al volo dopo aver salvato il puntatore al successivo bob)
+
+*/
 void remove_bob(BlitterBob* bob, UBYTE* screen) {
     restore_background(bob,screen);
     removeBobFromList(bob);

@@ -273,17 +273,19 @@ int main(int argc, char **argv)
 
             miobob->x = 200 -x ;
             miobob->y = 10;
-            dino->x = x;
-            dino->y = 20;
+            
 
-            if (x == 100) {
-                remove_bob(dino2,bitplanes);
+            if (x == 90) {
+                remove_bob(dino,bitplanes);
             }
 
-            if (x < 100) {
-                dino2->x = x;
-                dino2->y = x;
+            if (x < 90) {
+                dino->x = x;
+                dino->y = 20;
             }
+
+            dino2->x = x;
+            dino2->y = x;
 
             draw_bobs(bitplanes);
 
