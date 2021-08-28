@@ -334,6 +334,7 @@ void draw_bobs(UBYTE* screen) {
     } while (actual != 0);
 }
 
-void remove_bob(BlitterBob* bob) {
+void remove_bob(BlitterBob* bob, UBYTE* screen) {
+    restore_background(bob,screen);
     removeBobFromList(bob);
 }

@@ -277,7 +277,7 @@ int main(int argc, char **argv)
             dino->y = 20;
 
             if (x == 100) {
-                remove_bob(dino2);
+                remove_bob(dino2,bitplanes);
             }
 
             if (x < 100) {
