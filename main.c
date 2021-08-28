@@ -260,15 +260,10 @@ int main(int argc, char **argv)
 
     // Si parte
 
-    printf("bobList %p\n",bobList);
+    
 
     BlitterBob* miobob = init_bob("Explosion.raw",3,32,5,0,0);
-
-    printf("bobList %p\n",bobList);
-
-    draw_bobs(bitplanes);
-
-    /*
+    
     BlitterBob* dino = init_bob("dino.raw",3,32,5,0,0);
 
     BlitterBob* dino2 = init_bob("dino.raw",3,32,5,0,0);
@@ -279,8 +274,8 @@ int main(int argc, char **argv)
     dino->y = 20;
     dino2->x = 50;
     dino2->y = 50;
- */
-    //draw_bobs(bitplanes);
+ 
+    draw_bobs(bitplanes);
 
     wait_vblank();
     waitfire();
@@ -309,11 +304,11 @@ int main(int argc, char **argv)
     FreeMem(normal_block,BLOCK_SIZE);
     FreeMem(explosion1,BLOCK_SIZE);
     FreeMem(explosion1_mask,BLOCK_SIZE);
-    /* free_bob(miobob);
+    free_bob(miobob);
     free_bob(dino);
     free_bob(dino2);
     FreeMem(miobob,sizeof(BlitterBob));
     FreeMem(dino,sizeof(BlitterBob));
-    FreeMem(dino2,sizeof(BlitterBob)); */
+    FreeMem(dino2,sizeof(BlitterBob));
     return 0;
 }
