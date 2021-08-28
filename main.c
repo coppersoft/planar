@@ -275,8 +275,15 @@ int main(int argc, char **argv)
             miobob->y = 10;
             dino->x = x;
             dino->y = 20;
-            dino2->x = x;
-            dino2->y = x;
+
+            if (x == 100) {
+                remove_bob(dino2);
+            }
+
+            if (x < 100) {
+                dino2->x = x;
+                dino2->y = x;
+            }
 
             draw_bobs(bitplanes);
 
@@ -288,13 +295,5 @@ int main(int argc, char **argv)
     reset_display();
     FreeMem(bitplanes,GRAPHICS_BPLS_SIZE);
     FreeMem(normal_block,BLOCK_SIZE);
-    FreeMem(explosion1,BLOCK_SIZE);
-    FreeMem(explosion1_mask,BLOCK_SIZE);
-    free_bob(miobob);
-    free_bob(dino);
-    free_bob(dino2);
-    FreeMem(miobob,sizeof(BlitterBob));
-    FreeMem(dino,sizeof(BlitterBob));
-    FreeMem(dino2,sizeof(BlitterBob));
     return 0;
 }

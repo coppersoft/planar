@@ -304,6 +304,7 @@ void free_bob(BlitterBob* bob) {
     FreeMem (bob->imgdata,size);
     FreeMem (bob->mask,size);
     FreeMem (bob->prev_background,size);
+    FreeMem (bob,sizeof(BlitterBob));
 }
 
 void draw_bobs(UBYTE* screen) {
@@ -331,4 +332,8 @@ void draw_bobs(UBYTE* screen) {
         draw_bob(actual->bob,screen);
         actual = actual->nextBob;
     } while (actual != 0);
+}
+
+void remove_bob(BlitterBob* bob) {
+    removeBobFromList(bob);
 }
