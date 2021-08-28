@@ -7,6 +7,9 @@ extern struct Custom custom;
 extern BobListElement* bobList;
 
 static void addBobToList(BlitterBob* bob) {
+
+    printf("Chiamato addBobToList\n");
+
     //BobListElement* newElement = malloc(sizeof(BobListElement));
 
     BobListElement* newElement = AllocMem(sizeof(BobListElement),MEMF_CHIP|MEMF_CLEAR);
@@ -18,8 +21,11 @@ static void addBobToList(BlitterBob* bob) {
     newElement->nextBob = 0;
     if (bobList == 0) {
         bobList = newElement;
+        printf("addBobToList: bobList: %p\n",bobList);
         return;
     }
+
+    
 
     BobListElement* sentry = bobList;
 
@@ -199,6 +205,8 @@ BlitterBob* init_bob(char* img_file, int words, int rows, int bitplanes, int x, 
     newbob->mask = createMask(newbob->imgdata,newbob->header.bitplanes,newbob->header.rows,newbob->header.words);
     newbob->prev_background = AllocMem(size,MEMF_CHIP|MEMF_CLEAR);
 
+    addBobToList(newbob);
+
     return newbob;
 }
 
@@ -310,3 +318,29 @@ void free_bob(BlitterBob* bob) {
     FreeMem (bob->prev_background,size);
 }
 
+void draw_bobs(UBYTE* screen) {
+    BobListElement* actual = bobList;
+
+    // Ripristino i vecchi sfondi
+    if (actual != 0) {
+        do {
+            restore_background(actual->bob,screen);
+            actual = actual->nextBob;
+        } while (actual != 0);
+    } else {
+        return;
+    }
+
+    // Salvo lo sfondo attuale
+    actual = bobList;
+    do {
+        save_background(actual->bob,screen);
+        actual = actual->nextBob;
+    } while (actual != 0);
+
+    actual = bobList;
+    do {
+        draw_bob(actual->bob,screen);
+        actual = actual->nextBob;
+    } while (actual != 0);
+}
