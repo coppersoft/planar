@@ -282,7 +282,7 @@ int main(int argc, char **argv)
             
             framecounter++;
             jack->x = x;
-            jack->y = 70;
+            jack->y = 30;
 
             if (framecounter == 10) {
                 framecounter = 0;
