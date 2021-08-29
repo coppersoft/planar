@@ -8,6 +8,7 @@ struct BobHeader {
     UBYTE   rows;
     UBYTE   words;
     UBYTE   bitplanes;
+    int     frames;
 };
 
 // Non ho potuto chiamarlo Bob perché è già definito nell'NDK in graphics/gel.h (139)
@@ -19,6 +20,7 @@ typedef struct BlitterBob {
     UBYTE*  mask;
     UBYTE*  prev_background;
     int     prev_background_offset;
+    int     frame;
 } BlitterBob;
 
 typedef struct BobListElement {
@@ -26,7 +28,7 @@ typedef struct BobListElement {
     struct BobListElement*       nextBob;
 } BobListElement;
 
-BlitterBob* init_bob(char* img_file, int words, int rows, int bitplanes, int x, int y);
+BlitterBob* init_bob(char* img_file, int words, int rows, int bitplanes, int frames, int x, int y);
 void draw_bob(BlitterBob* bob,UBYTE* screen);
 void free_bob(BlitterBob* bob);
 void restore_background(BlitterBob* bob,UBYTE* screen);

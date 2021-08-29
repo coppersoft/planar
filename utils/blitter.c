@@ -141,15 +141,15 @@ void masked_blit(UBYTE* source, UBYTE* dest, UBYTE* mask, UBYTE* background, int
 /**
  * Crea maschera da un bob interleaved
  */
-static UBYTE* createMask(unsigned char* bob,int bitplanes, int rows, int words) {
-    size_t size = ((words*2)*rows*bitplanes);
+static UBYTE* createMask(unsigned char* bob,int bitplanes, int frames, int rows, int words) {
+    size_t size = ((words*2)*rows*bitplanes*frames);
 
     UBYTE* mask = AllocMem(size,MEMF_CHIP|MEMF_CLEAR);
     UBYTE* work = AllocMem(words*2,MEMF_CHIP|MEMF_CLEAR);
 
     int mask_idx = 0;
     int bp_idx = 0;
-    for (int r = 0; r < rows; r++) {
+    for (int r = 0; r < rows*frames; r++) {
         // Creo la riga r-esima della maschera
         
         for (int bp = 0; bp < bitplanes; bp++) {
@@ -175,23 +175,28 @@ static UBYTE* createMask(unsigned char* bob,int bitplanes, int rows, int words) 
     return mask;
 }
 
-BlitterBob* init_bob(char* img_file, int words, int rows, int bitplanes, int x, int y) {
+BlitterBob* init_bob(char* img_file, int words, int rows, int bitplanes, int frames, int x, int y) {
     BlitterBob* newbob = AllocMem(sizeof(BlitterBob),MEMF_CHIP|MEMF_CLEAR);
 
     newbob->header.bitplanes = bitplanes;
     newbob->header.firstdraw = 1;
     newbob->header.rows = rows;
     newbob->header.words = words;
+    newbob->header.frames = frames;
     newbob->x = x;
     newbob->y = y;
 
-    size_t size = (words*2)*rows*bitplanes;
+    size_t background_size = (words*2)*rows*bitplanes;
+
+    size_t size = background_size*frames;
 
     newbob->imgdata = alloc_and_load_asset(size,img_file);
     //newbob.mask = alloc_and_load_asset(size,mask_file);
 
-    newbob->mask = createMask(newbob->imgdata,newbob->header.bitplanes,newbob->header.rows,newbob->header.words);
-    newbob->prev_background = AllocMem(size,MEMF_CHIP|MEMF_CLEAR);
+    newbob->mask = createMask(newbob->imgdata,newbob->header.bitplanes,newbob->header.frames,newbob->header.rows,newbob->header.words);
+
+    //newbob->mask = createMask(newbob->imgdata,newbob->header.bitplanes,newbob->header.frames,newbob->header.rows,newbob->header.words);
+    newbob->prev_background = AllocMem(background_size,MEMF_CHIP|MEMF_CLEAR);
 
     addBobToList(newbob);
 
@@ -274,36 +279,36 @@ void restore_background(BlitterBob* bob,UBYTE* screen) {
 
 void draw_bob(BlitterBob* bob,UBYTE* screen) {
 
-    // Se non è la primissima blittata ripristino lo sfondo
-    /*if(!(bob->header.firstdraw)) {
-        // TODO: Ripristinare lo sfondo con una bella blittata partendo dagli x e y attuali prima dello
-        //       spostamento
-        
-    } else {
-        ////printf("Primo disegno, nessun ripristino\n");
-        bob->header.x = x;
-        bob->header.y = y;
-    }*/
-
-    /*if (bob->header.firstdraw) {
-        bob->header.x = x;
-        bob->header.y = y;
-    }*/
-
-    //save_background(bob,screen);
-
-    //bob->header.x = x;
-    //bob->header.y = y;
     bob->header.firstdraw = 0;
+
+    int frameoffset = (((bob->header.words)*2) * bob->header.rows * bob->header.bitplanes) * bob->frame;
+ /*    
+    printf ("bob imagedata %p\n",bob->imgdata);
+    printf ("frameoffset: %d\n",frameoffset);
+    printf ("bob imagedata + frameoffset %p\n",bob->imgdata+frameoffset); */
+
     
-    masked_blit(bob->imgdata,screen,bob->mask,screen,bob->x,bob->y,bob->header.words,bob->header.rows,bob->header.bitplanes);
+
+    masked_blit(bob->imgdata+frameoffset,
+                screen,
+                bob->mask+frameoffset,
+                screen,bob->x,
+                bob->y,
+                bob->header.words,
+                bob->header.rows,
+                bob->header.bitplanes);
+
+    
+
 }
 
+// Fixare dimensione prev_background che è un solo frame
 void free_bob(BlitterBob* bob) {
-    size_t size = (bob->header.words*2)*bob->header.rows*bob->header.bitplanes;
+    size_t size_background = (bob->header.words*2)*bob->header.rows*bob->header.bitplanes;
+    size_t size = size_background*bob->header.frames;
     FreeMem (bob->imgdata,size);
     FreeMem (bob->mask,size);
-    FreeMem (bob->prev_background,size);
+    FreeMem (bob->prev_background,size_background);
     FreeMem (bob,sizeof(BlitterBob));
 }
 

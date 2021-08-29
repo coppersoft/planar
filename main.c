@@ -262,18 +262,36 @@ int main(int argc, char **argv)
 
     
 
-    BlitterBob* miobob = init_bob("Explosion.raw",3,32,5,0,0);
+    BlitterBob* miobob = init_bob("Explosion.raw",3,32,5,1,0,0);
     
-    BlitterBob* dino = init_bob("dino.raw",3,32,5,0,0);
+    BlitterBob* dino = init_bob("dino.raw",3,32,5,1,0,0);
 
-    BlitterBob* dino2 = init_bob("dino.raw",3,32,5,0,0);
+    BlitterBob* dino2 = init_bob("dino.raw",3,32,5,1,0,0);
+
+    BlitterBob* jack = init_bob("Jack.raw",3,32,5,3,0,0);
+    
+    int framecounter = 0;
 
     for (int x = 0; x < 200; x++) {
             //printf("======= Sto per disegnare bob x %d\n",x);
 
+            
+
             miobob->x = 200 -x ;
             miobob->y = 10;
             
+            framecounter++;
+            jack->x = x;
+            jack->y = 70;
+
+            if (framecounter == 10) {
+                framecounter = 0;
+                jack->frame++;
+                if (jack->frame == 3) {
+                    jack->frame = 0;
+                }
+            }
+
 
             if (x == 90) {
                 remove_bob(dino,bitplanes);
@@ -297,5 +315,6 @@ int main(int argc, char **argv)
     reset_display();
     FreeMem(bitplanes,GRAPHICS_BPLS_SIZE);
     FreeMem(normal_block,BLOCK_SIZE);
+   
     return 0;
 }
