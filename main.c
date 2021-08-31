@@ -235,9 +235,9 @@ int main(int argc, char **argv)
         http://amigadev.elowar.com/read/ADCD_2.1/Includes_and_Autodocs_2._guide/node024B.html
     */
     UBYTE   *bitplanes = alloc_and_load_asset(GRAPHICS_BPLS_SIZE,"Pic.raw");
-    UBYTE   *normal_block = alloc_and_load_asset(BLOCK_SIZE,"normal_block.raw");
-    UBYTE   *explosion1 = alloc_and_load_asset(EXPLOSION_FRAME_SIZE,"Explosion.raw");
-    UBYTE   *explosion1_mask = alloc_and_load_asset(EXPLOSION_FRAME_SIZE,"Explosion_mask.raw");
+    //UBYTE   *normal_block = alloc_and_load_asset(BLOCK_SIZE,"normal_block.raw");
+    //UBYTE   *explosion1 = alloc_and_load_asset(EXPLOSION_FRAME_SIZE,"Explosion.raw");
+    //UBYTE   *explosion1_mask = alloc_and_load_asset(EXPLOSION_FRAME_SIZE,"Explosion_mask.raw");
 
     point_bitplanes(bitplanes,&copperlist[BPL1PTH_VALUE_IDX],5);
 
@@ -316,7 +316,7 @@ int main(int argc, char **argv)
     waitmouse();  // replace with logic
     reset_display();
     FreeMem(bitplanes,GRAPHICS_BPLS_SIZE);
-    FreeMem(normal_block,BLOCK_SIZE);
+    //FreeMem(normal_block,BLOCK_SIZE);
    
     return 0;
 }
