@@ -31,6 +31,8 @@
 
     vc +kick13 -c99 -I$NDK_INC main.c -lamiga -lauto -o main.exe
 
+    make
+
 */
 
 
