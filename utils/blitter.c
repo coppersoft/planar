@@ -6,6 +6,9 @@
 extern struct Custom custom;
 extern BobListElement* bobList;
 
+extern BOOL doublebuffer;
+extern int drawBufferSelector;
+
 static void addBobToList(BlitterBob* bob) {
     BobListElement* newElement = AllocMem(sizeof(BobListElement),MEMF_CHIP|MEMF_CLEAR);
 
@@ -188,6 +191,10 @@ BlitterBob* init_bob(char* img_file, int words, int rows, int bitplanes, int fra
 
     size_t background_size = (words*2)*rows*bitplanes;
 
+    if (doublebuffer) {
+        background_size *= 2;
+    }
+
     size_t size = background_size*frames;
 
     newbob->imgdata = alloc_and_load_asset(size,img_file);
@@ -308,6 +315,9 @@ void free_bob(BlitterBob* bob) {
     size_t size = size_background*bob->header.frames;
     FreeMem (bob->imgdata,size);
     FreeMem (bob->mask,size);
+    if (doublebuffer) {
+        size_background *= 2;
+    }
     FreeMem (bob->prev_background,size_background);
     FreeMem (bob,sizeof(BlitterBob));
 }
