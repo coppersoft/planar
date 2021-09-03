@@ -245,6 +245,7 @@ int main(int argc, char **argv)
     UBYTE *bitplanes = init_bitplanes(GRAPHICS_BPLS_SIZE);
 
     load_asset(bitplanes,GRAPHICS_BPLS_SIZE,"Pic.raw");
+    load_asset(bitplanes+GRAPHICS_BPLS_SIZE,GRAPHICS_BPLS_SIZE,"Pic.raw");
 
     point_bitplanes(bitplanes,&copperlist[BPL1PTH_VALUE_IDX],5);
 
