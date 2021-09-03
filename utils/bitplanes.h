@@ -4,3 +4,4 @@
 void point_bitplanes (UBYTE* bitplanes, UWORD* BPL1PTH_addr, int bpl_number);
 UBYTE* init_bitplanes(size_t size);
 void free_bitplanes(UBYTE* bitplanes, size_t size);
+void switchBuffers(UBYTE* bitplanes, UWORD* BPL1PTH_addr, int bpl_number,size_t bpls_size);

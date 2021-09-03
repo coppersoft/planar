@@ -161,6 +161,7 @@ static UWORD __chip paddle_data[] = {
     BobListElement* bobList = 0;
 
     BOOL doublebuffer = 1;
+    int drawBufferSelector = 0;
 
 /*
     3:00
@@ -314,6 +315,8 @@ int main(int argc, char **argv)
             dino2->y = x;
 
             draw_bobs(bitplanes);
+
+            switchBuffers(bitplanes,&copperlist[BPL1PTH_VALUE_IDX],5,GRAPHICS_BPLS_SIZE);
 
             wait_vblank();
             waitfire();

@@ -2,6 +2,7 @@
 #include <clib/exec_protos.h>
 
 extern BOOL doublebuffer;
+extern int drawBufferSelector;
 
 /**
     Funzione generica di puntamento bitplane
@@ -36,4 +37,17 @@ void free_bitplanes(UBYTE* bitplanes, size_t size) {
         size*=2;
     }
     FreeMem(bitplanes,size);
+}
+
+void switchBuffers(UBYTE* bitplanes, UWORD* BPL1PTH_addr, int bpl_number, size_t bpls_size) {
+    int bitplaneOffset = 0;
+    // Se il vecchio drawbuffer è il primo dei buffer, allora l'offset rimane zero
+    if (drawBufferSelector == 0) {
+        drawBufferSelector = 1;
+    } else {
+        bitplaneOffset = bpls_size;
+        drawBufferSelector = 0;
+    }
+
+    point_bitplanes(bitplanes+bitplaneOffset,BPL1PTH_addr,bpl_number);
 }
