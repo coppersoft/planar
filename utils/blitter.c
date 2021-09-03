@@ -284,6 +284,17 @@ void restore_background(BlitterBob* bob,UBYTE* screen) {
     }
 }
 
+static int getDB_bpls_offset() {
+    int bpls_offset = 0;
+
+    if (doublebuffer) {
+        if (drawBufferSelector == 1) {
+            bpls_offset = (40*256)*5;       // TODO: sistemare
+        }
+    }
+    return bpls_offset;
+}
+
 void draw_bob(BlitterBob* bob,UBYTE* screen) {
 
     bob->header.firstdraw = 0;
@@ -294,12 +305,14 @@ void draw_bob(BlitterBob* bob,UBYTE* screen) {
     printf ("frameoffset: %d\n",frameoffset);
     printf ("bob imagedata + frameoffset %p\n",bob->imgdata+frameoffset); */
 
-    
+    // Offset per l'eventuale double buffer
+    int bpls_offset = getDB_bpls_offset();
 
     masked_blit(bob->imgdata+frameoffset,
-                screen,
+                screen+bpls_offset,
                 bob->mask+frameoffset,
-                screen,bob->x,
+                screen+bpls_offset,
+                bob->x,
                 bob->y,
                 bob->header.words,
                 bob->header.rows,
