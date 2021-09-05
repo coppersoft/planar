@@ -272,13 +272,13 @@ int main(int argc, char **argv)
 
     
 
-    BlitterBob* miobob = init_bob("Explosion.raw",3,32,5,1,0,0);
+    //BlitterBob* miobob = init_bob("Explosion.raw",3,32,5,1,0,0);
     
-    BlitterBob* dino = init_bob("dino.raw",3,32,5,1,0,0);
+    //BlitterBob* dino = init_bob("dino.raw",3,32,5,1,0,0);
 
     BlitterBob* dino2 = init_bob("dino.raw",3,32,5,1,0,0);
 
-    BlitterBob* jack = init_bob("Jack.raw",3,32,5,3,0,0);
+    //BlitterBob* jack = init_bob("Jack.raw",3,32,5,3,0,0);
     
     int framecounter = 0;
 
@@ -287,30 +287,30 @@ int main(int argc, char **argv)
 
             
 
-            miobob->x = 200 -x ;
-            miobob->y = 10;
+            //miobob->x = 200 -x ;
+            //miobob->y = 10;
             
-            framecounter++;
-            jack->x = x;
-            jack->y = 30;
+            //framecounter++;
+            //jack->x = x;
+            //jack->y = 30;
 
-            if (framecounter == 10) {
+            /* if (framecounter == 10) {
                 framecounter = 0;
                 jack->frame++;
                 if (jack->frame == 3) {
                     jack->frame = 0;
                 }
-            }
+            } */
 
 
-            if (x == 90) {
+            /* if (x == 90) {
                 remove_bob(dino,bitplanes);
-            }
+            } */
 
-            if (x < 90) {
+            /* if (x < 90) {
                 dino->x = x;
                 dino->y = 20;
-            }
+            } */
 
             dino2->x = x;
             dino2->y = x;
