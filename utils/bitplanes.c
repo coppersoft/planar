@@ -24,7 +24,6 @@ void point_bitplanes (UBYTE* bitplanes, UWORD* BPL1PTH_addr, int bpl_number) {
 
 UBYTE* init_bitplanes(size_t size) {
     if (doublebuffer) {
-        printf("init_bitplanes: è doublebuffer");
         size*=2;
     }
     UBYTE* bpls = AllocMem(size,MEMF_CHIP|MEMF_CLEAR);
@@ -33,7 +32,6 @@ UBYTE* init_bitplanes(size_t size) {
 
 void free_bitplanes(UBYTE* bitplanes, size_t size) {
     if (doublebuffer) {
-        printf("free_bitplanes: è doublebuffer");
         size*=2;
     }
     FreeMem(bitplanes,size);

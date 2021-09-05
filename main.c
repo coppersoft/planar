@@ -230,7 +230,7 @@ int main(int argc, char **argv)
 {
     SetTaskPri(FindTask(NULL), TASK_PRIORITY);
     BOOL is_pal = init_display();
-    printf("PAL display: %d\n", is_pal);
+    //printf("PAL display: %d\n", is_pal);
 
     /*
         Prendo un blocco di memoria libero in CHIP e lo pulisco con AllocMem
