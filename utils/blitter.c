@@ -87,7 +87,6 @@ static void removeBobFromList(BlitterBob* bob) {
  *  @param  int    bitplanes    -> Numero bitplanes
  */
 void simple_blit(UBYTE* source, UBYTE* dest, int words, int rows, int bitplanes) {
-    OwnBlitter();
     WaitBlit();
     /* 0 = shift nullo
        9 = 1001: abilito solo i canali A e D
@@ -106,11 +105,10 @@ void simple_blit(UBYTE* source, UBYTE* dest, int words, int rows, int bitplanes)
     custom.bltdmod = 40 - (words*2);
 
     custom.bltsize = (UWORD) ((rows*bitplanes) << 6) | words;
-    DisownBlitter();
 }
 
 void masked_blit(UBYTE* source, UBYTE* dest, UBYTE* mask, UBYTE* background, int x, int y, int words, int rows, int bitplanes) {
-    OwnBlitter();
+    
     WaitBlit();
 
     int shift = x & 0xf;
@@ -156,7 +154,6 @@ void masked_blit(UBYTE* source, UBYTE* dest, UBYTE* mask, UBYTE* background, int
     custom.bltdmod = modulod;
 
     custom.bltsize = (UWORD) ((rows*bitplanes) << 6) | words;
-    DisownBlitter();
 }
 
 /**
@@ -246,8 +243,6 @@ void save_background(BlitterBob* bob,UBYTE* source) {
 
     source+=offset;
 
-    
-
     source+=getDB_bpls_offset();
 
 
@@ -256,7 +251,6 @@ void save_background(BlitterBob* bob,UBYTE* source) {
     int bitplanes = bob->header.bitplanes;
 
 
-    OwnBlitter();
     WaitBlit();
     /* 0 = shift nullo
        9 = 1001: abilito solo i canali A e D
@@ -275,7 +269,6 @@ void save_background(BlitterBob* bob,UBYTE* source) {
     custom.bltdmod = 0;
 
     custom.bltsize = (UWORD) ((rows*5) << 6) | words;
-    DisownBlitter();
 
     bob->prev_background_offset[drawBufferSelector] = offset;
 }
@@ -352,7 +345,7 @@ void free_bob(BlitterBob* bob) {
 }
 
 void draw_bobs(UBYTE* screen) {
-    
+    OwnBlitter();
     BobListElement* actual = bobList;
 
     // Ripristino i vecchi sfondi
@@ -377,6 +370,7 @@ void draw_bobs(UBYTE* screen) {
         draw_bob(actual->bob,screen);
         actual = actual->nextBob;
     } while (actual != 0);
+    DisownBlitter();
 }
 
 /*
