@@ -295,6 +295,26 @@ void restore_background(BlitterBob* bob,UBYTE* screen) {
     }
 }
 
+/*
+    Chiamato in caso di eliminazione del bob dalla lista, pulisce entrambi gli sfondi
+    del double buffer
+*/
+void clean_both_backgrounds(BlitterBob* bob,UBYTE* screen) {
+    UBYTE* dest_ripristino = screen;
+    dest_ripristino += bob->prev_background_offset[0];
+
+    simple_blit(bob->prev_background[0],
+            dest_ripristino,
+            bob->header.words,bob->header.rows,bob->header.bitplanes);
+
+    dest_ripristino = screen;
+    dest_ripristino += 40*5*256;
+    dest_ripristino += bob->prev_background_offset[1];
+
+    simple_blit(bob->prev_background[1],
+            dest_ripristino,
+            bob->header.words,bob->header.rows,bob->header.bitplanes);
+}
 
 
 void draw_bob(BlitterBob* bob,UBYTE* screen) {
@@ -378,6 +398,7 @@ void draw_bobs(UBYTE* screen) {
 
 */
 void remove_bob(BlitterBob* bob, UBYTE* screen) {
-    restore_background(bob,screen);
+    //restore_background(bob,screen);
+    clean_both_backgrounds(bob,screen);
     removeBobFromList(bob);
 }
