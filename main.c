@@ -282,10 +282,7 @@ int main(int argc, char **argv)
     BlitterBob* jack = init_bob("Jack.raw",3,32,5,3,0,0);
     
     int framecounter = 0;
-
-    printf("FB1: %d - FB2: %d\n",bitplanes,bitplanes+GRAPHICS_BPLS_SIZE);
     
-
     for (int x = 0; x < 200; x++) {
             //printf("======= Sto per disegnare bob x %d\n",x);
 
