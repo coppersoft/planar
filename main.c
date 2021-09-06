@@ -244,8 +244,8 @@ int main(int argc, char **argv)
 
     UBYTE *bitplanes = init_bitplanes(GRAPHICS_BPLS_SIZE);
 
-    load_asset(bitplanes,GRAPHICS_BPLS_SIZE,"Pic0.raw");
-    load_asset(bitplanes+GRAPHICS_BPLS_SIZE,GRAPHICS_BPLS_SIZE,"Pic1.raw");
+    load_asset(bitplanes,GRAPHICS_BPLS_SIZE,"Pic.raw");
+    load_asset(bitplanes+GRAPHICS_BPLS_SIZE,GRAPHICS_BPLS_SIZE,"Pic.raw");
 
 
     point_bitplanes(bitplanes,&copperlist[BPL1PTH_VALUE_IDX],5);
@@ -289,7 +289,7 @@ int main(int argc, char **argv)
     for (int x = 0; x < 200; x++) {
             //printf("======= Sto per disegnare bob x %d\n",x);
 
-            
+            set_sprite_pos(paddle_data, x, 200-x, paddle_height);
 
             miobob->x = 200 -x ;
             miobob->y = 10;
