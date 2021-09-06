@@ -1,6 +1,7 @@
 #include "vblank.h"
 
-#define RAST_LINE_TO_WAIT   (0xc1)
+//#define RAST_LINE_TO_WAIT   (0xc1)
+#define RAST_LINE_TO_WAIT   (0x2a)
 
 // 303 è PAL, se NTSC 262
 /*void wait_vblank()
@@ -9,7 +10,6 @@
 }*/
 
 void wait_vblank() {
-    UBYTE rastline = 0xc1;
 
     volatile UBYTE *custom_vposr_low = (volatile UBYTE *) 0xdff005;
     volatile UBYTE *custom_vhposr = (volatile UBYTE *) 0xdff006;
