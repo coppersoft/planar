@@ -4,7 +4,7 @@ void simple_blit(UBYTE* source, UBYTE* dest, int words, int rows, int bitplanes)
 void masked_blit(UBYTE* source, UBYTE* dest, UBYTE* mask, UBYTE* background, int x, int y, int words, int rows, int bitplanes);
 
 struct BobHeader {
-    BOOL    firstdraw;
+    BOOL    firstdraw[2];
     UBYTE   rows;
     UBYTE   words;
     UBYTE   bitplanes;
@@ -18,8 +18,8 @@ typedef struct BlitterBob {
     WORD    y;
     UBYTE*  imgdata;
     UBYTE*  mask;
-    UBYTE*  prev_background;
-    int     prev_background_offset;
+    UBYTE*  prev_background[2];
+    int     prev_background_offset[2];
     int     frame;
 } BlitterBob;
 

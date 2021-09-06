@@ -200,7 +200,8 @@ BlitterBob* init_bob(char* img_file, int words, int rows, int bitplanes, int fra
     BlitterBob* newbob = AllocMem(sizeof(BlitterBob),MEMF_CHIP|MEMF_CLEAR);
 
     newbob->header.bitplanes = bitplanes;
-    newbob->header.firstdraw = 1;
+    newbob->header.firstdraw[0] = 1;
+    newbob->header.firstdraw[1] = 1;
     newbob->header.rows = rows;
     newbob->header.words = words;
     newbob->header.frames = frames;
@@ -209,17 +210,14 @@ BlitterBob* init_bob(char* img_file, int words, int rows, int bitplanes, int fra
 
     size_t background_size = (words*2)*rows*bitplanes;
 
-    if (doublebuffer) {
-        background_size *= 2;
-    }
-
     size_t size = background_size*frames;
 
     newbob->imgdata = alloc_and_load_asset(size,img_file);
 
     newbob->mask = createMask(newbob->imgdata,newbob->header.bitplanes,newbob->header.frames,newbob->header.rows,newbob->header.words);
 
-    newbob->prev_background = AllocMem(background_size,MEMF_CHIP|MEMF_CLEAR);
+    newbob->prev_background[0] = AllocMem(background_size,MEMF_CHIP|MEMF_CLEAR);
+    newbob->prev_background[1] = AllocMem(background_size,MEMF_CHIP|MEMF_CLEAR);
 
     addBobToList(newbob);
 
@@ -248,6 +246,12 @@ void save_background(BlitterBob* bob,UBYTE* source) {
 
     source+=offset;
 
+    
+
+    source+=getDB_bpls_offset();
+
+    printf("save_background con source %d\n",source);
+
     int words = bob->header.words;
     int rows = bob->header.rows;
     int bitplanes = bob->header.bitplanes;
@@ -263,7 +267,7 @@ void save_background(BlitterBob* bob,UBYTE* source) {
     custom.bltcon1 = 0x0;       // dff042
 
     custom.bltapt = source;
-    custom.bltdpt = bob->prev_background;
+    custom.bltdpt = bob->prev_background[drawBufferSelector];
 
     custom.bltafwm = 0xffff;    // Maschere
     custom.bltalwm = 0xffff;
@@ -274,17 +278,21 @@ void save_background(BlitterBob* bob,UBYTE* source) {
     custom.bltsize = (UWORD) ((rows*5) << 6) | words;
     DisownBlitter();
 
-    bob->prev_background_offset = offset;
+    bob->prev_background_offset[drawBufferSelector] = offset;
 }
 
 void restore_background(BlitterBob* bob,UBYTE* screen) {
-    if(!(bob->header.firstdraw)) {
+    if(!(bob->header.firstdraw[drawBufferSelector])) {
         
         UBYTE* dest_ripristino = screen;
-        dest_ripristino += bob->prev_background_offset;
-        simple_blit(bob->prev_background,dest_ripristino,bob->header.words,bob->header.rows,bob->header.bitplanes);
+        dest_ripristino += getDB_bpls_offset();
+        dest_ripristino += bob->prev_background_offset[drawBufferSelector];
+        printf("restore_background: con dest: %d\n",dest_ripristino);
+        simple_blit(bob->prev_background[drawBufferSelector],
+            dest_ripristino,
+            bob->header.words,bob->header.rows,bob->header.bitplanes);
     } else {
-        //printf("restore_background: prima blittata, non faccio nulla\n");
+        printf("restore_background: prima blittata, non faccio nulla\n");
     }
 }
 
@@ -292,7 +300,7 @@ void restore_background(BlitterBob* bob,UBYTE* screen) {
 
 void draw_bob(BlitterBob* bob,UBYTE* screen) {
 
-    bob->header.firstdraw = 0;
+    bob->header.firstdraw[drawBufferSelector] = 0;
 
     int frameoffset = (((bob->header.words)*2) * bob->header.rows * bob->header.bitplanes) * bob->frame;
  
@@ -319,14 +327,13 @@ void free_bob(BlitterBob* bob) {
     size_t size = size_background*bob->header.frames;
     FreeMem (bob->imgdata,size);
     FreeMem (bob->mask,size);
-    if (doublebuffer) {
-        size_background *= 2;
-    }
-    FreeMem (bob->prev_background,size_background);
+    FreeMem (bob->prev_background[0],size_background);
+    FreeMem (bob->prev_background[1],size_background);
     FreeMem (bob,sizeof(BlitterBob));
 }
 
 void draw_bobs(UBYTE* screen) {
+    printf("=== draw bobs su drawbuffer %d\n",drawBufferSelector);
     BobListElement* actual = bobList;
 
     // Ripristino i vecchi sfondi
