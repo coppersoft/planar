@@ -286,7 +286,7 @@ int main(int argc, char **argv)
     printf("FB1: %d - FB2: %d\n",bitplanes,bitplanes+GRAPHICS_BPLS_SIZE);
     
 
-    for (int x = 0; x < 5; x++) {
+    for (int x = 0; x < 200; x++) {
             //printf("======= Sto per disegnare bob x %d\n",x);
 
             
@@ -316,7 +316,7 @@ int main(int argc, char **argv)
                 dino->y = 20;
             } */
 
-            dino2->x = 0;
+            dino2->x = x;
             dino2->y = x;
 
             draw_bobs(bitplanes);
@@ -324,7 +324,7 @@ int main(int argc, char **argv)
             switchBuffers(bitplanes,&copperlist[BPL1PTH_VALUE_IDX],5,GRAPHICS_BPLS_SIZE);
 
             wait_vblank();
-            wait(1);
+            
             waitfire();
     }
 

@@ -250,7 +250,6 @@ void save_background(BlitterBob* bob,UBYTE* source) {
 
     source+=getDB_bpls_offset();
 
-    printf("save_background con source %d\n",source);
 
     int words = bob->header.words;
     int rows = bob->header.rows;
@@ -287,12 +286,12 @@ void restore_background(BlitterBob* bob,UBYTE* screen) {
         UBYTE* dest_ripristino = screen;
         dest_ripristino += getDB_bpls_offset();
         dest_ripristino += bob->prev_background_offset[drawBufferSelector];
-        printf("restore_background: con dest: %d\n",dest_ripristino);
+        
         simple_blit(bob->prev_background[drawBufferSelector],
             dest_ripristino,
             bob->header.words,bob->header.rows,bob->header.bitplanes);
     } else {
-        printf("restore_background: prima blittata, non faccio nulla\n");
+        //printf("restore_background: prima blittata, non faccio nulla\n");
     }
 }
 
@@ -333,7 +332,7 @@ void free_bob(BlitterBob* bob) {
 }
 
 void draw_bobs(UBYTE* screen) {
-    printf("=== draw bobs su drawbuffer %d\n",drawBufferSelector);
+    
     BobListElement* actual = bobList;
 
     // Ripristino i vecchi sfondi

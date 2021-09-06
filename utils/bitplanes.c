@@ -46,6 +46,6 @@ void switchBuffers(UBYTE* bitplanes, UWORD* BPL1PTH_addr, int bpl_number, size_t
         bitplaneOffset = bpls_size;
         drawBufferSelector = 0;
     }
-    printf("switchBuffers: sto per puntare i bitplane: %d\n",bitplanes+bitplaneOffset);
+    
     point_bitplanes(bitplanes+bitplaneOffset,BPL1PTH_addr,bpl_number);
 }
