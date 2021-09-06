@@ -9,6 +9,24 @@ extern BobListElement* bobList;
 extern BOOL doublebuffer;
 extern int drawBufferSelector;
 
+/*
+    Restituisce quando bisogna spostarsi per il buffer dove scrivere
+
+    0 se il drawBufferSelector è 0
+    grandezza singolo framebuffer se è 1
+*/
+static int getDB_bpls_offset() {
+    int bpls_offset = 0;
+
+    if (doublebuffer) {
+        if (drawBufferSelector == 1) {
+            bpls_offset = (40*256)*5;       // TODO: sistemare
+        }
+    }
+    return bpls_offset;
+}
+
+
 static void addBobToList(BlitterBob* bob) {
     BobListElement* newElement = AllocMem(sizeof(BobListElement),MEMF_CHIP|MEMF_CLEAR);
 
@@ -198,11 +216,9 @@ BlitterBob* init_bob(char* img_file, int words, int rows, int bitplanes, int fra
     size_t size = background_size*frames;
 
     newbob->imgdata = alloc_and_load_asset(size,img_file);
-    //newbob.mask = alloc_and_load_asset(size,mask_file);
 
     newbob->mask = createMask(newbob->imgdata,newbob->header.bitplanes,newbob->header.frames,newbob->header.rows,newbob->header.words);
 
-    //newbob->mask = createMask(newbob->imgdata,newbob->header.bitplanes,newbob->header.frames,newbob->header.rows,newbob->header.words);
     newbob->prev_background = AllocMem(background_size,MEMF_CHIP|MEMF_CLEAR);
 
     addBobToList(newbob);
@@ -211,6 +227,9 @@ BlitterBob* init_bob(char* img_file, int words, int rows, int bitplanes, int fra
 }
 
 /*
+    Restituisce di quanti byte ci dobbiamo spostare per il singolo bob
+    nel singolo framebuffer
+
     TODO: Generalizzare il 40!!!
 */
 static int getOffset(BlitterBob* bob) {
@@ -218,11 +237,8 @@ static int getOffset(BlitterBob* bob) {
     int x = bob->x;
     int bitplanes = bob->header.bitplanes;
 
-    //printf("getoffset: x: %d - y: %d - bpl: %d\n",x,y,bitplanes);
-
     int offset = y*40*bitplanes;
     offset += (x>> 4)*2;
-    //printf("Valore calcolato dentro getoffset %d\n",offset);
     return offset;
 }
 
@@ -232,19 +248,10 @@ void save_background(BlitterBob* bob,UBYTE* source) {
 
     source+=offset;
 
-    //printf("save_background, offset %d\n",getOffset(bob));
-
     int words = bob->header.words;
     int rows = bob->header.rows;
     int bitplanes = bob->header.bitplanes;
 
-/*
-    ////printf("save_background \n");
-    ////printf("words: %d\n",words);
-    ////printf("rows: %d\n",rows);
-    ////printf("bitplanes: %d\n",bitplanes);
-    ////printf("offset: %d\n",getOffset(bob));
-    */
 
     OwnBlitter();
     WaitBlit();
@@ -272,39 +279,23 @@ void save_background(BlitterBob* bob,UBYTE* source) {
 
 void restore_background(BlitterBob* bob,UBYTE* screen) {
     if(!(bob->header.firstdraw)) {
-        ////printf("restore_background: ripristino\n");
-        // TODO: Ripristinare lo sfondo con una bella blittata partendo dagli x e y attuali prima dello
-        //       spostamento
+        
         UBYTE* dest_ripristino = screen;
         dest_ripristino += bob->prev_background_offset;
-        ////printf("Ripristino sfondo con x %d, offset: %d\n",bob->header.x, bob->prev_background_offset);
         simple_blit(bob->prev_background,dest_ripristino,bob->header.words,bob->header.rows,bob->header.bitplanes);
     } else {
         //printf("restore_background: prima blittata, non faccio nulla\n");
     }
 }
 
-static int getDB_bpls_offset() {
-    int bpls_offset = 0;
 
-    if (doublebuffer) {
-        if (drawBufferSelector == 1) {
-            bpls_offset = (40*256)*5;       // TODO: sistemare
-        }
-    }
-    return bpls_offset;
-}
 
 void draw_bob(BlitterBob* bob,UBYTE* screen) {
 
     bob->header.firstdraw = 0;
 
     int frameoffset = (((bob->header.words)*2) * bob->header.rows * bob->header.bitplanes) * bob->frame;
- /*    
-    printf ("bob imagedata %p\n",bob->imgdata);
-    printf ("frameoffset: %d\n",frameoffset);
-    printf ("bob imagedata + frameoffset %p\n",bob->imgdata+frameoffset); */
-
+ 
     // Offset per l'eventuale double buffer
     int bpls_offset = getDB_bpls_offset();
 

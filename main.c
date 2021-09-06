@@ -283,7 +283,7 @@ int main(int argc, char **argv)
     
     int framecounter = 0;
 
-    for (int x = 0; x < 5; x++) {
+    for (int x = 0; x < 5*2; x = x + 2) {
             //printf("======= Sto per disegnare bob x %d\n",x);
 
             
