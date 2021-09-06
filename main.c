@@ -283,7 +283,7 @@ int main(int argc, char **argv)
     
     int framecounter = 0;
 
-    for (int x = 0; x < 200; x++) {
+    for (int x = 0; x < 5; x++) {
             //printf("======= Sto per disegnare bob x %d\n",x);
 
             
@@ -321,6 +321,7 @@ int main(int argc, char **argv)
             switchBuffers(bitplanes,&copperlist[BPL1PTH_VALUE_IDX],5,GRAPHICS_BPLS_SIZE);
 
             wait_vblank();
+            wait(1);
             waitfire();
     }
 
