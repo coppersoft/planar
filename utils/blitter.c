@@ -5,8 +5,6 @@
 
 extern struct Custom custom;
 extern BobListElement* bobList;
-
-extern BOOL doublebuffer;
 extern int drawBufferSelector;
 
 /*
@@ -18,10 +16,8 @@ extern int drawBufferSelector;
 static int getDB_bpls_offset() {
     int bpls_offset = 0;
 
-    if (doublebuffer) {
-        if (drawBufferSelector == 1) {
-            bpls_offset = (40*256)*5;       // TODO: sistemare
-        }
+    if (drawBufferSelector == 1) {
+        bpls_offset = (40*256)*5;       // TODO: sistemare
     }
     return bpls_offset;
 }

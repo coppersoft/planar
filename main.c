@@ -160,7 +160,7 @@ static UWORD __chip paddle_data[] = {
     // Lista con tutti i bob presenti in questa applicazione
     BobListElement* bobList = 0;
 
-    BOOL doublebuffer = 1;
+    //BOOL doublebuffer = 1;
     int drawBufferSelector = 0;
 
 /*
