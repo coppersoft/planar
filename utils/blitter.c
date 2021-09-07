@@ -204,6 +204,7 @@ BlitterBob* init_bob(char* img_file, int words, int rows, int bitplanes, int fra
     newbob->header.frames = frames;
     newbob->x = x;
     newbob->y = y;
+    newbob->state = DRAW;
 
     size_t background_size = (words*2)*rows*bitplanes;
 
@@ -352,7 +353,26 @@ void draw_bobs(UBYTE* screen) {
     if (actual != 0) {
         do {
             restore_background(actual->bob,screen);
-            actual = actual->nextBob;
+
+            switch (actual->bob->state) {
+                case DRAW: {
+                    actual = actual->nextBob;
+                    break;
+                }
+                case TO_BE_DELETED_BUFFER_0: {
+                    actual->bob->state = TO_BE_DELETED_BUFFER_1_AND_CLEANED;
+                    actual = actual->nextBob;
+                    break;
+                }
+                case TO_BE_DELETED_BUFFER_1_AND_CLEANED: {
+                    BlitterBob* toBeRemoved = actual->bob;
+                    actual = actual->nextBob;
+                    removeBobFromList(toBeRemoved);
+                    break;
+                }
+            }
+
+            
         } while (actual != 0);
     } else {
         return;
@@ -361,13 +381,17 @@ void draw_bobs(UBYTE* screen) {
     // Salvo lo sfondo attuale
     actual = bobList;
     do {
-        save_background(actual->bob,screen);
+        if (actual->bob->state == DRAW) {
+            save_background(actual->bob,screen);
+        }
         actual = actual->nextBob;
     } while (actual != 0);
 
     actual = bobList;
     do {
-        draw_bob(actual->bob,screen);
+        if (actual->bob->state == DRAW) {
+            draw_bob(actual->bob,screen);
+        }
         actual = actual->nextBob;
     } while (actual != 0);
     DisownBlitter();
@@ -391,8 +415,9 @@ void draw_bobs(UBYTE* screen) {
       (o magari al volo dopo aver salvato il puntatore al successivo bob)
 
 */
-void remove_bob(BlitterBob* bob, UBYTE* screen) {
+void remove_bob(BlitterBob* bob) {
     //restore_background(bob,screen);
-    clean_both_backgrounds(bob,screen);
-    removeBobFromList(bob);
+    //clean_both_backgrounds(bob,screen);
+    //removeBobFromList(bob);
+    bob->state = TO_BE_DELETED_BUFFER_0;
 }

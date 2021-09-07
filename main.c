@@ -305,7 +305,7 @@ int main(int argc, char **argv)
 
 
             if (x == 90) {
-                remove_bob(dino,bitplanes);
+                remove_bob(dino);
             }
 
             if (x < 90) {
