@@ -289,28 +289,6 @@ void restore_background(BlitterBob* bob,UBYTE* screen) {
     }
 }
 
-/*
-    Chiamato in caso di eliminazione del bob dalla lista, pulisce entrambi gli sfondi
-    del double buffer
-*/
-void clean_both_backgrounds(BlitterBob* bob,UBYTE* screen) {
-    UBYTE* dest_ripristino = screen;
-    dest_ripristino += bob->prev_background_offset[0];
-
-    simple_blit(bob->prev_background[0],
-            dest_ripristino,
-            bob->header.words,bob->header.rows,bob->header.bitplanes);
-
-    dest_ripristino = screen;
-    dest_ripristino += 40*5*256;
-    dest_ripristino += bob->prev_background_offset[1];
-
-    simple_blit(bob->prev_background[1],
-            dest_ripristino,
-            bob->header.words,bob->header.rows,bob->header.bitplanes);
-}
-
-
 void draw_bob(BlitterBob* bob,UBYTE* screen) {
 
     bob->header.firstdraw[drawBufferSelector] = 0;
@@ -397,27 +375,6 @@ void draw_bobs(UBYTE* screen) {
     DisownBlitter();
 }
 
-/*
-    ATTENZIONE: Così sembra funzionare, ma flickera e ogni tanto "riappare lo sfondo" nel bob cancellato
-    anche se in realtà lo fa anche con quelli non cancellati.
-    
-    Tanto devo implementare il double buffer, quindi probabilmente questo problema si elimina
-    spontaneamente.
-
-    Eventualmente, implementare la cancellazione
-    come segue
-
-    - Il remove_bob non cancella fisicamente il bob, ma lo marca per essere cancellato al prossimo
-      draw_bobs
-
-    - Il draw_bobs, dopo aver ripristinato lo sfondo di tutti i bob, se il bob è marcato per essere
-      cancellato, non ne salva lo sfondo e lo cancella dalla lista alla fine di tutto i cicli
-      (o magari al volo dopo aver salvato il puntatore al successivo bob)
-
-*/
 void remove_bob(BlitterBob* bob) {
-    //restore_background(bob,screen);
-    //clean_both_backgrounds(bob,screen);
-    //removeBobFromList(bob);
     bob->state = TO_BE_DELETED_BUFFER_0;
 }

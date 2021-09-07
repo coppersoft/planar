@@ -40,7 +40,6 @@ BlitterBob* init_bob(char* img_file, int words, int rows, int bitplanes, int fra
 void draw_bob(BlitterBob* bob,UBYTE* screen);
 void free_bob(BlitterBob* bob);
 void restore_background(BlitterBob* bob,UBYTE* screen);
-void clean_both_backgrounds(BlitterBob* bob,UBYTE* screen);
 void save_background(BlitterBob* bob,UBYTE* source);
 void draw_bobs(UBYTE* screen);
 void remove_bob(BlitterBob* bob);

@@ -1,7 +1,7 @@
 #include "bitplanes.h"
 #include <clib/exec_protos.h>
 
-extern BOOL doublebuffer;
+
 extern int drawBufferSelector;
 
 /**
@@ -23,17 +23,13 @@ void point_bitplanes (UBYTE* bitplanes, UWORD* BPL1PTH_addr, int bpl_number) {
 }
 
 UBYTE* init_bitplanes(size_t size) {
-    if (doublebuffer) {
-        size*=2;
-    }
+    size*=2;                                    
     UBYTE* bpls = AllocMem(size,MEMF_CHIP|MEMF_CLEAR);
     return bpls;
 }
 
 void free_bitplanes(UBYTE* bitplanes, size_t size) {
-    if (doublebuffer) {
-        size*=2;
-    }
+    size*=2;
     FreeMem(bitplanes,size);
 }
 
