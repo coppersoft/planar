@@ -374,3 +374,13 @@ void draw_bobs(UBYTE* screen) {
 void remove_bob(BlitterBob* bob) {
     bob->state = TO_BE_DELETED_BUFFER_0;
 }
+
+void free_all_bobs() {
+    BobListElement* actual = bobList;
+    while (actual != 0) {
+        free_bob(actual->bob);
+        BobListElement* prev = actual;
+        FreeVec(prev);
+        actual = actual->nextBob;
+    }
+}

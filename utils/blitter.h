@@ -43,3 +43,4 @@ void restore_background(BlitterBob* bob,UBYTE* screen);
 void save_background(BlitterBob* bob,UBYTE* source);
 void draw_bobs(UBYTE* screen);
 void remove_bob(BlitterBob* bob);
+void free_all_bobs();

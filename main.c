@@ -266,10 +266,15 @@ int main(int argc, char **argv)
             
             waitfire();
     }
-
+    
     waitmouse();  // replace with logic
-    reset_display();
+    
+
     free_bitplanes(bitplanes);
+
+    free_all_bobs();
+   
+    reset_display();
     //FreeMem(normal_block,BLOCK_SIZE);
    
     ULONG endavail = AvailMem(MEMF_CHIP);
