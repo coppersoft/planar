@@ -13,3 +13,9 @@ BOOL isMousePressed() {
         return 0;
     }
 }
+
+void waitmouse()
+{
+    volatile UBYTE *ciaa_pra = (volatile UBYTE *) 0xbfe001;
+    while ((*ciaa_pra & PRA_FIR0_BIT) != 0) ;
+}

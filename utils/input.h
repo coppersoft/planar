@@ -5,3 +5,4 @@
 
 void waitfire();
 BOOL isMousePressed();
+void waitmouse();
