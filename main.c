@@ -166,6 +166,10 @@ static UWORD __chip paddle_data[] = {
 
 int main(int argc, char **argv)
 {
+    ULONG startavail = AvailMem(MEMF_CHIP);
+
+    printf("Inizio: %d\n",startavail);
+
     SetTaskPri(FindTask(NULL), TASK_PRIORITY);
     BOOL is_pal = init_display();
     //printf("PAL display: %d\n", is_pal);
@@ -268,5 +272,10 @@ int main(int argc, char **argv)
     free_bitplanes(bitplanes);
     //FreeMem(normal_block,BLOCK_SIZE);
    
+    ULONG endavail = AvailMem(MEMF_CHIP);
+
+    printf("Fine: %d\n",endavail);
+    printf("Leaked: %d\n",startavail-endavail);
+
     return 0;
 }
