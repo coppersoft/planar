@@ -1,8 +1,10 @@
 #include "init.h"
 #include <clib/graphics_protos.h>
 #include <graphics/gfxbase.h>
+#include <clib/intuition_protos.h>
 
 extern struct GfxBase *GfxBase;
+extern struct Custom custom;
 
 /*
     3:00
@@ -34,4 +36,29 @@ BOOL init_display(void)
     WaitTOF();       // 2 WaitTOFs to wait for 1. long frame and
     WaitTOF();       // 2. short frame copper lists to finish (if interlaced)
     return (((struct GfxBase *) GfxBase)->DisplayFlags & PAL) == PAL;
+}
+
+
+/*
+    La prima chiamata è a LoadView, passandogli l'ultima active view memorizzata
+    nella graphics library base. Questo rinizializza i registri relativi al display alla
+    actiview precedente
+
+    (GfxBase.ActiView è un oggetto View, definito in graphics/view.h)
+
+    I due WaitTOF aspettano il copper che finisce
+
+    Poi settiamo la copperlist a quella del workbench
+
+    Infine RethinkDisplay ricostruisce il display del workbench
+    http://amigadev.elowar.com/read/ADCD_2.1/Includes_and_Autodocs_2._guide/node024B.html
+    
+*/
+void reset_display(void)
+{
+    LoadView(((struct GfxBase *) GfxBase)->ActiView);
+    WaitTOF();
+    WaitTOF();
+    custom.cop1lc = (ULONG) ((struct GfxBase *) GfxBase)->copinit;
+    RethinkDisplay();
 }
