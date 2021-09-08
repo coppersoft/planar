@@ -1,7 +1,7 @@
 #include "disk.h"
 
 void* alloc_and_load_asset(size_t size, char* filename) {
-    UBYTE* dest = AllocMem(size,MEMF_CHIP|MEMF_CLEAR);
+    UBYTE* dest = AllocVec(size,MEMF_CHIP|MEMF_CLEAR);
 
     load_asset(dest,size,filename);
     return dest;

@@ -24,7 +24,7 @@ static int getDB_bpls_offset() {
 
 
 static void addBobToList(BlitterBob* bob) {
-    BobListElement* newElement = AllocMem(sizeof(BobListElement),MEMF_CHIP|MEMF_CLEAR);
+    BobListElement* newElement = AllocVec(sizeof(BobListElement),MEMF_CHIP|MEMF_CLEAR);
 
     newElement->bob = bob;
     newElement->nextBob = 0;
@@ -48,7 +48,7 @@ static void removeBobFromList(BlitterBob* bob) {
         // Caso particolare, è il primo della lista
         if (bobList->bob == bob) {
             BobListElement* secondBobSave = bobList->nextBob; // Mi salvo il puntatore del secondo
-            FreeMem(bobList,sizeof(BobListElement));              // libero la memoria occupata dal primo elemento della lista
+            FreeVec(bobList);              // libero la memoria occupata dal primo elemento della lista
             bobList = secondBobSave; // Faccio puntare l'inizio della lista all'elemento successivo
             
         } else {
@@ -58,7 +58,7 @@ static void removeBobFromList(BlitterBob* bob) {
                 actual = actual->nextBob;
             }
             BobListElement* nextBobSave = actual->nextBob->nextBob; // Mi salvo il puntatore a due più avanti
-            FreeMem(actual->nextBob,sizeof(BobListElement));        // Libero la memoria occupata dall'elemento successivo */
+            FreeVec(actual->nextBob);        // Libero la memoria occupata dall'elemento successivo */
             actual->nextBob = nextBobSave; // Faccio puntare l'elemento attuale a due elementi più avanti
             
         }
@@ -158,8 +158,8 @@ void masked_blit(UBYTE* source, UBYTE* dest, UBYTE* mask, UBYTE* background, int
 static UBYTE* createMask(unsigned char* bob,int bitplanes, int frames, int rows, int words) {
     size_t size = ((words*2)*rows*bitplanes*frames);
 
-    UBYTE* mask = AllocMem(size,MEMF_CHIP|MEMF_CLEAR);
-    UBYTE* work = AllocMem(words*2,MEMF_CHIP|MEMF_CLEAR);
+    UBYTE* mask = AllocVec(size,MEMF_CHIP|MEMF_CLEAR);
+    UBYTE* work = AllocVec(words*2,MEMF_CHIP|MEMF_CLEAR);
 
     int mask_idx = 0;
     int bp_idx = 0;
@@ -185,12 +185,12 @@ static UBYTE* createMask(unsigned char* bob,int bitplanes, int frames, int rows,
         }
 
     }
-    FreeMem(work,words*2);
+    FreeVec(work);
     return mask;
 }
 
 BlitterBob* init_bob(char* img_file, int words, int rows, int bitplanes, int frames, int x, int y) {
-    BlitterBob* newbob = AllocMem(sizeof(BlitterBob),MEMF_CHIP|MEMF_CLEAR);
+    BlitterBob* newbob = AllocVec(sizeof(BlitterBob),MEMF_CHIP|MEMF_CLEAR);
 
     newbob->header.bitplanes = bitplanes;
     newbob->header.firstdraw[0] = 1;
@@ -210,8 +210,8 @@ BlitterBob* init_bob(char* img_file, int words, int rows, int bitplanes, int fra
 
     newbob->mask = createMask(newbob->imgdata,newbob->header.bitplanes,newbob->header.frames,newbob->header.rows,newbob->header.words);
 
-    newbob->prev_background[0] = AllocMem(background_size,MEMF_CHIP|MEMF_CLEAR);
-    newbob->prev_background[1] = AllocMem(background_size,MEMF_CHIP|MEMF_CLEAR);
+    newbob->prev_background[0] = AllocVec(background_size,MEMF_CHIP|MEMF_CLEAR);
+    newbob->prev_background[1] = AllocVec(background_size,MEMF_CHIP|MEMF_CLEAR);
 
     addBobToList(newbob);
 
@@ -312,11 +312,11 @@ void draw_bob(BlitterBob* bob,UBYTE* screen) {
 void free_bob(BlitterBob* bob) {
     size_t size_background = (bob->header.words*2)*bob->header.rows*bob->header.bitplanes;
     size_t size = size_background*bob->header.frames;
-    FreeMem (bob->imgdata,size);
-    FreeMem (bob->mask,size);
-    FreeMem (bob->prev_background[0],size_background);
-    FreeMem (bob->prev_background[1],size_background);
-    FreeMem (bob,sizeof(BlitterBob));
+    FreeVec (bob->imgdata);
+    FreeVec (bob->mask);
+    FreeVec (bob->prev_background[0]);
+    FreeVec (bob->prev_background[1]);
+    FreeVec (bob);
 }
 
 void draw_bobs(UBYTE* screen) {

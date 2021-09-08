@@ -265,7 +265,7 @@ int main(int argc, char **argv)
 
     waitmouse();  // replace with logic
     reset_display();
-    free_bitplanes(bitplanes,GRAPHICS_BPLS_SIZE);
+    free_bitplanes(bitplanes);
     //FreeMem(normal_block,BLOCK_SIZE);
    
     return 0;
