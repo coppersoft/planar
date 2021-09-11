@@ -4,7 +4,11 @@
 #include "disk.h"
 
 extern struct Custom custom;
-extern BobListElement* bobList;
+//extern BobListElement* bobList;
+
+// Lista con tutti i bob presenti in questa applicazione
+BobListElement* bobList = 0;
+
 extern int drawBufferSelector;
 
 /*
