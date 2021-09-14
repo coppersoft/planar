@@ -14,4 +14,16 @@ A work in progress C Game Engine for your Amiga
     * Dynamic add/remove of Bobs
     * Transparent background save/restore machinery
 
+## Compiling
+
+Simply run make.
+
+## Requirements
+
+You need vbcc cross-compiler
+
+http://sun.hasenbraten.de/vbcc/
+
+And Amiga NDK from haage-parner. Detailed install process will follow.
+
 Stay tuned! Amiga will never die!!!
