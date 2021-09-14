@@ -24,6 +24,6 @@ You need vbcc cross-compiler
 
 http://sun.hasenbraten.de/vbcc/
 
-And Amiga NDK from haage-parner. Detailed install process will follow.
+And Amiga NDK from haage-partner. Detailed install process will follow.
 
 Stay tuned! Amiga will never die!!!
