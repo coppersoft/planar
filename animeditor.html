@@ -1,0 +1,114 @@
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="robots" content="noindex, nofollow">
+    
+
+    <style type="text/css">
+        .box {
+            width: 640px;
+            height: 512px;
+            border: 2px solid darkblue;
+            background-color: blue;
+            color: white;
+            font: 16px "Zilla", "Open Sans", "Helvetica", "Arial", sans-serif;
+        }
+    </style>
+
+    <title>Planar Bob movement editor</title>
+</head>
+
+<body>
+
+    <h1>Planar bob movement editor</h1>
+
+    <canvas class="box" id="canvas" width="640px" height="512px">
+        
+    </canvas>
+
+    <div id = "x"></div>
+    <div id = "y"></div>
+    <div id = "mouse"></div>
+
+    <button id="clear">Clear</button>
+    <button id="download" disabled="true">Download</button>
+
+    <script>
+
+        var clicked = false;
+
+        var movement = new Array();
+
+        var box = document.getElementById("canvas");
+        var btn_clear = document.getElementById("clear");
+        var btn_download = document.getElementById("download");
+        var pageX = document.getElementById("x");
+        var pageY = document.getElementById("y");
+        var mousestatus = document.getElementById("mouse");
+
+        function clear() {
+            var ctx = box.getContext("2d");
+            ctx.fillStyle = 'blue';
+            ctx.fillRect(0,0,640,512);
+            movement.splice(0,movement.length);
+            btn_download.disabled = true;
+        }
+
+        function download() {
+            var element = document.createElement('a');
+            element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(movement));
+            element.setAttribute('download', "movement.c");
+
+            element.style.display = 'none';
+            document.body.appendChild(element);
+
+            element.click();
+
+            document.body.removeChild(element);
+        }
+
+        function saveCoords(event) {
+            // CanvasRenderingContext2D
+            var ctx = box.getContext("2d");
+            ctx.fillStyle = 'white';
+
+            var x = event.offsetX;
+            var y = event.offsetY;
+
+            ctx.fillRect(x,y,2,2);
+            movement.push(Math.round(x/2));
+            movement.push(Math.round(y/2));
+        }
+
+        function updateMouseDown(event) {
+            mousestatus.innerText = "Mouse Down "+event.offsetX+ " - "+event.offsetY;
+
+            clicked = true;
+
+            btn_download.disabled = false;
+            saveCoords(event);
+        }
+
+        function updateMouseMove(event) {
+            mousestatus.innerText = "Mouse Move "+event.offsetX+ " - "+event.offsetY;
+            if (clicked) {
+                saveCoords(event);
+            }
+        }
+
+        function updateMouseUp(event) {
+            clicked = false;
+        }
+
+        box.addEventListener("mousemove", updateMouseMove, false);
+        //box.addEventListener("mouseenter", updateDisplay, false);
+        box.addEventListener("mouseup", updateMouseUp, false);
+        box.addEventListener("mousedown", updateMouseDown, false);
+        btn_clear.addEventListener("click",clear, false);
+        btn_download.addEventListener("click",download,false);
+    </script>
+
+</body>
+
+</html>
