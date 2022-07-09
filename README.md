@@ -14,6 +14,9 @@ A work in progress C Game Engine for your Amiga
     * Dynamic add/remove of Bobs
     * Transparent background save/restore machinery
 
+* ptplayer integration for protracker modules playback
+* Initial AGA support
+
 ## Compiling
 
 Simply run make.
