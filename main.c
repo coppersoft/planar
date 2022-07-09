@@ -6,21 +6,30 @@
 
 */
 
+//#define JACK_AND_COMPANY
+#define BLOCKS
+
 #include <stdio.h>
 #include <hardware/custom.h>
+#include <hardware/dmabits.h>
 #include <clib/exec_protos.h>
 #include <clib/intuition_protos.h>
 #include <clib/graphics_protos.h>
 #include <graphics/gfxbase.h>
-#include "utils/ahpc_registers.h"
-#include "utils/init.h"
-#include "utils/bitplanes.h"
-#include "utils/sprites.h"
-#include "utils/vblank.h"
-#include "utils/blitter.h"
-#include "utils/disk.h"
-#include "utils/input.h"
-#include "utils/debug.h"
+#include "planar/ahpc_registers.h"
+#include "planar/init.h"
+#include "planar/bitplanes.h"
+#include "planar/sprites.h"
+#include "planar/vblank.h"
+#include "planar/blitter.h"
+#include "planar/disk.h"
+#include "planar/input.h"
+#include "planar/debug.h"
+#include "planar/screen.h"
+#include "planar/audio.h"
+#include "planar/interrupt.h"
+#include "planar/collision.h"
+#include "planar/animation.h"
 
 /*
 
@@ -42,148 +51,130 @@
 #define TASK_PRIORITY           (20)
 
 
-// 5 bitplanes, composite color.
-#define BPLCON0_5BPP_COMPOSITE_COLOR 0x5200
+
 
 // Assets sizes in bytes
-#define GRAPHICS_BPLS_SIZE   (40*256)*5
+//#define GRAPHICS_BPLS_SIZE   (40*256)*5
 #define BLOCK_SIZE           (2*16*5)
 #define EXPLOSION_FRAME_SIZE (6*32*5)   // larghezza 48 px (32 + 16 padding), altezza 32 righe
 
-// Diwstart e stop
-#define DIWSTRT_VALUE      0x2c81
-#define DIWSTOP_VALUE_PAL  0x2cc1
 
-// Data fetch
-#define DDFSTRT_VALUE      0x0038
-#define DDFSTOP_VALUE      0x00d0
-
-// copper instruction macros
-#define COP_MOVE(addr, data) addr, data
-#define COP_WAIT_END  0xffff, 0xfffe
-
-// Indici array copperlist
-#define BPL1PTH_VALUE_IDX (49)
-#define SPR0PTH_VALUE_IDX (3)   
 
 
 extern struct GfxBase *GfxBase;
 extern struct Custom custom;
 
-/*
-    5:00
-    __chip dice a vbcc di mettere la roba in chip, ovviamente per la coppelist in questo caso
-
-    "la prima move dice al computer di emettere nello schermo i colori registrati nel color register zero
-    lo facciamo settando il color burst bit in BPLCON0"
-
-    http://amiga-dev.wikidot.com/hardware:bplcon0  (bit 9, infatti vedi BPLCON0_COMPOSITE_COLOR)
-
-*/
-static UWORD __chip copperlist[] = {
-
-    COP_MOVE(FMODE,   0), // set fetch mode = 0 (slow fetch mode for AGA compatibility)
-
-    COP_MOVE(SPR0PTH, 0), COP_MOVE(SPR0PTL, 0),     // Sprites
-    COP_MOVE(SPR1PTH, 0), COP_MOVE(SPR1PTL, 0),
-    COP_MOVE(SPR2PTH, 0), COP_MOVE(SPR2PTL, 0),
-    COP_MOVE(SPR3PTH, 0), COP_MOVE(SPR3PTL, 0),
-    COP_MOVE(SPR4PTH, 0), COP_MOVE(SPR4PTL, 0),
-    COP_MOVE(SPR5PTH, 0), COP_MOVE(SPR5PTL, 0),
-    COP_MOVE(SPR6PTH, 0), COP_MOVE(SPR6PTL, 0),
-    COP_MOVE(SPR7PTH, 0), COP_MOVE(SPR7PTL, 0),
-
-    COP_MOVE(DDFSTRT, DDFSTRT_VALUE),
-    COP_MOVE(DDFSTOP, DDFSTOP_VALUE),
-    COP_MOVE(DIWSTRT, DIWSTRT_VALUE),
-    COP_MOVE(DIWSTOP, DIWSTOP_VALUE_PAL),
-    COP_MOVE(BPLCON0, BPLCON0_5BPP_COMPOSITE_COLOR),
-
-    // Bitplane modulos, interleaved, quindi 40 byte * 5-1 bitplane
-    COP_MOVE(BPL1MOD, 40*4),
-    COP_MOVE(BPL2MOD, 40*4),
-    // Bitplane pointers.
-    COP_MOVE(BPL1PTH, 0),
-    COP_MOVE(BPL1PTL, 0),
-    COP_MOVE(BPL2PTH, 0),
-    COP_MOVE(BPL2PTL, 0),
-    COP_MOVE(BPL3PTH, 0),
-    COP_MOVE(BPL3PTL, 0),
-    COP_MOVE(BPL4PTH, 0),
-    COP_MOVE(BPL4PTL, 0),
-    COP_MOVE(BPL5PTH, 0),
-    COP_MOVE(BPL5PTL, 0),
-
-// Palette
-	0x0180,0x0000,0x0182,0x0aaa,0x0184,0x0e00,0x0186,0x0a00,
-	0x0188,0x0d80,0x018a,0x0fe0,0x018c,0x08f0,0x018e,0x0080,
-	0x0190,0x00b6,0x0192,0x00dd,0x0194,0x00af,0x0196,0x007c,
-	0x0198,0x000f,0x019a,0x070f,0x019c,0x0c0e,0x019e,0x0c08,
-	0x01a0,0x0620,0x01a2,0x00cf,0x01a4,0x006c,0x01a6,0x0029,
-	0x01a8,0x0333,0x01aa,0x0444,0x01ac,0x0555,0x01ae,0x0666,
-	0x01b0,0x0777,0x01b2,0x0888,0x01b4,0x0999,0x01b6,0x0aaa,
-	0x01b8,0x0ccc,0x01ba,0x0ddd,0x01bc,0x0eee,0x01be,0x0fff,
-
-/*
-    COP_MOVE(COLOR00, 0x000),
-    0x7c07, 0xfffe,            // wait for 1/3 (0x07, 0x7c)
-    COP_MOVE(COLOR00, 0xf00),
-    0xda07, 0xfffe,            // wait for 2/3 (0x07, 0xda)
-    COP_MOVE(COLOR00, 0xff0),
-*/
-    COP_WAIT_END
-};
-
-
-static UWORD __chip paddle_data[] = {
+static UWORD __chip greenShipRight[] = {
+    	0x0000,0x0000,
 	0x0000,0x0000,
+	0x0080,0x00e0,
+	0x00a0,0x00d0,
+	0x0090,0x00e8,
+	0x0088,0x00f4,
+	0x0084,0x40fa,
+	0x80ff,0xc0ff,
+	0x8000,0xc000,
+	0x8000,0xe000,
+	0xc000,0xf800,
+	0xf000,0xff00,
+	0x7e00,0x7ffe,
+	0x3ffc,0x3ffc,
 	0x0000,0x0000,
-	0x0000,0x0000,
-	0x03c0,0x0000,
-	0x0c00,0x03f0,
-	0x1000,0x0ff8,
-	0x1180,0x0ff8,
-	0x2244,0x1ffc,
-	0x2424,0x1fdc,
-	0x2424,0x1fdc,
-	0x2244,0x1fbc,
-	0x0188,0x1e78,
-	0x0008,0x1ff8,
-	0x0030,0x0ff0,
+	0x0000,0x0080,
 	0x03c0,0x03c0,
-	0x0000,0x0000,
-	0x0000,0x0000,
+	0x07e0,0x0760,
+	0x0ff0,0x0f70,
+	0x1ff8,0x1f78,
+	0x3ffc,0x3f7c,
+	0x3ffe,0x7f7e,
+	0x3fff,0xff00,
+	0x3fff,0xffff,
+	0x1fff,0xffff,
+	0x07ff,0xffff,
+	0x00ff,0xffff,
+	0x0000,0x7ffe,
+	0x0000,0x3ffc,
+	0x0000,0x0000
+};
+
+static UWORD __chip redShipRight[] = {
+		0x0000,0x0000,
+	0x0000,0x03c0,
+	0x0080,0x07e0,
+	0x00a0,0x0fd0,
+	0x0090,0x1fe8,
+	0x0088,0x3ff4,
+	0x0084,0x3ffa,
+	0x80ff,0xbfff,
+	0x8000,0xbfff,
+	0x8000,0x9fff,
+	0xc000,0xc7ff,
+	0xf000,0xf0ff,
+	0x7e00,0x7e00,
+	0x3ffc,0x3ffc,
+	0x0000,0x0000,      // Fine primo sprite
+	0x0000,0x0080,      // word di controllo del secondo sprite (attached)
+	0x03c0,0x0000,
+	0x07e0,0x0060,
+	0x0ff0,0x0070,
+	0x1ff8,0x0078,
+	0x3ffc,0x007c,
+	0x3ffe,0x407e,
+	0xbfff,0x4000,
+	0xbfff,0x4000,
+	0x9fff,0x6000,
+	0xc7ff,0x3800,
+	0xf0ff,0x0f00,
+	0x7e00,0x01fe,
+	0x3ffc,0x0000,
 	0x0000,0x0000,
 };
 
+static UWORD __chip redShipLeft[] = {
+	0x0000,0x0000,
+	0x0000,0x03c0,
+	0x0100,0x07e0,
+	0x0500,0x0bf0,
+	0x0900,0x17f8,
+	0x1100,0x2ffc,
+	0x2100,0x5ffc,
+	0xff01,0xfffd,
+	0x0001,0xfffd,
+	0x0001,0xfff9,
+	0x0003,0xffe3,
+	0x000f,0xff0f,
+	0x007e,0x007e,
+	0x3ffc,0x3ffc,
+	0x0000,0x0000,  // Fine primo sprite
+	0x0000,0x0080,  // word di controllo del secondo sprite (attached)
+	0x03c0,0x0000,
+	0x07e0,0x0600,
+	0x0ff0,0x0e00,
+	0x1ff8,0x1e00,
+	0x3ffc,0x3e00,
+	0x7ffc,0x7e02,
+	0xfffd,0x0002,
+	0xfffd,0x0002,
+	0xfff9,0x0006,
+	0xffe3,0x001c,
+	0xff0f,0x00f0,
+	0x007e,0x7f80,
+	0x3ffc,0x0000,
+	0x0000,0x0000
+};
 
-
-    //BOOL doublebuffer = 1;
+    /*
+        TODO: il drawbufferselector non dovrebbe stare qui
+    */
     int drawBufferSelector = 0;
 
 int main(int argc, char **argv)
 {
     SetTaskPri(FindTask(NULL), TASK_PRIORITY);
-    BOOL is_pal = init_display();
-    //printf("PAL display: %d\n", is_pal);
+    
+    custom.dmacon = DMAF_AUD0;
 
-    /*
-        Prendo un blocco di memoria libero in CHIP e lo pulisco con AllocMem
-
-        http://amigadev.elowar.com/read/ADCD_2.1/Includes_and_Autodocs_2._guide/node024B.html
-    */
-    //UBYTE   *bitplanes = alloc_and_load_asset(GRAPHICS_BPLS_SIZE,"Pic.raw");
-    //UBYTE   *normal_block = alloc_and_load_asset(BLOCK_SIZE,"normal_block.raw");
-    //UBYTE   *explosion1 = alloc_and_load_asset(EXPLOSION_FRAME_SIZE,"Explosion.raw");
-    //UBYTE   *explosion1_mask = alloc_and_load_asset(EXPLOSION_FRAME_SIZE,"Explosion_mask.raw");
-
-    UBYTE *bitplanes = init_bitplanes(GRAPHICS_BPLS_SIZE);
-
-    load_asset(bitplanes,GRAPHICS_BPLS_SIZE,"Pic.raw");
-    load_asset(bitplanes+GRAPHICS_BPLS_SIZE,GRAPHICS_BPLS_SIZE,"Pic.raw");
-
-
-    point_bitplanes(bitplanes,&copperlist[BPL1PTH_VALUE_IDX],5);
+    installVertbInterrupt((APTR)checkSoundStop,NULL);
 
     /*
         SPRITES
@@ -192,83 +183,327 @@ int main(int argc, char **argv)
     // Punto gli sprite 0-7 a null
     reset_sprites(&copperlist[SPR0PTH_VALUE_IDX]);
 
-    point_sprite(&copperlist[SPR0PTH_VALUE_IDX],paddle_data);
+    point_sprite_number(0,redShipRight);
+    point_sprite_number(1,&redShipRight[30]);
     
-    UWORD paddle_x = 125, paddle_y = 0, paddle_height = 16;
-    set_sprite_pos(paddle_data, paddle_x, paddle_y, paddle_height);
+    point_sprite_number(2,greenShipRight);
+    point_sprite_number(3,&greenShipRight[30]);
+    
 
+    WORD ship_x = 125, ship_y = 0, ship_height = 13;
+    set_sprite_pos(redShipRight, ship_x, ship_y, ship_height);
+    set_sprite_pos(&redShipRight[30], ship_x, ship_y, ship_height);
+
+    init_screen(40,256,8,0,0,0,1);
+
+    
+
+
+    load_asset(screen.bitplanes, "pulsar.raw");
+
+    
+
+    load_asset(screen.bitplanes + screen.framebuffer_size,"pulsar.raw");
+    
+    /* load_asset(screen.bitplanes + (screen.framebuffer_size / 2),
+                40*256*4,
+                "ColoriPF2.raw");
+
+    load_asset(screen.bitplanes + (screen.framebuffer_size / 2) + screen.framebuffer_size,
+                40*256*4,
+                "ColoriPF2.raw"); */
+
+    
+    UWORD bplcon2 = custom.bplcon2;
+    bplcon2 |= 0x40;     // Playfield 2 priorità su playfield 1 (ci sta sopra)
+    bplcon2 |= 0x24;     // Priorità massima agli sprite su tutti e 2 i Playfield
+
+    custom.bplcon2 = bplcon2;
+
+    UWORD bplcon4 = custom.bplcon4;
+
+    custom.bplcon4 = 0x22;  // Seleziono la palette degli sprite
+
+    wait_vblank();
+
+    sound* bang = init_sound("bang.raw");
+    sound* udeath = init_sound("udeath.raw");
+
+    BlitterBob* block1 = init_bob("16block.raw",2,16,4,1,0,0,BOBTYPE_FAST,PLAYFIELD_2);
+    BlitterBob* block2 = init_bob("16block_stripe.raw",2,16,4,1,0,0,BOBTYPE_FAST,PLAYFIELD_2);
+    BlitterBob* block3 = init_bob("16block.raw",2,16,4,1,0,0,BOBTYPE_FAST,PLAYFIELD_2);
+    BlitterBob* block4 = init_bob("16block_stripe.raw",2,16,4,1,0,0,BOBTYPE_FAST,PLAYFIELD_2);
+    BlitterBob* block5 = init_bob("16block.raw",2,16,4,1,0,0,BOBTYPE_FAST,PLAYFIELD_2);
+    BlitterBob* block6 = init_bob("16block_stripe.raw",2,16,4,1,0,0,BOBTYPE_FAST,PLAYFIELD_2);
+
+    BlitterBob* block7 = init_bob("16block.raw",2,16,4,1,0,0,BOBTYPE_FAST,PLAYFIELD_2);
+
+    BlitterBob* block8 = init_bob("16block_stripe.raw",2,16,4,1,0,0,BOBTYPE_FAST,PLAYFIELD_2);
 
     /*
-        Settiamo il puntatore alla copperlist1, usiamo anche qui la variabile "custom" che
-        il compilatore ci fornisce per accedere ai registri custom
+        Test animation
     */
-    custom.cop1lc = (ULONG) copperlist;
 
-    // Si parte
+    animation* anim_block8 = init_animation("movement1.pa",CYCLIC);
+    //printf("Animation size %d\n",anim_block8->size);
 
-    
+    int frame = 5;
 
-    BlitterBob* miobob = init_bob("Explosion.raw",3,32,5,1,0,0);
-    
-    BlitterBob* dino = init_bob("dino.raw",3,32,5,1,0,0);
+    UWORD x = anim_block8->animdata[(frame*2)+1];
+    UWORD y = anim_block8->animdata[(frame*2)+2];
 
-    BlitterBob* dino2 = init_bob("dino.raw",3,32,5,1,0,0);
+    //printf("x %d\n",x);
+    //printf("y %d\n",y);
 
-    BlitterBob* jack = init_bob("Jack.raw",3,32,5,3,0,0);
-    
-    int framecounter = 0;
-    
-    for (int x = 0; x < 200; x++) {
-            //printf("======= Sto per disegnare bob x %d\n",x);
+    block8->animation = anim_block8;
 
-            set_sprite_pos(paddle_data, x, 200-x, paddle_height);
+    block1->x = 10;
+    block1->y = 10;
+    block2->x = 40;
+    block2->y = 40;
+    block3->x = 60;
+    block3->y = 60;
+    block4->x = 80;
+    block4->y = 80;
+    block5->x = 100;
+    block5->y = 100;
+    block6->x = 120;
+    block6->y = 120;
 
-            miobob->x = 200 -x ;
-            miobob->y = 10;
-            
-            framecounter++;
-            jack->x = x;
-            jack->y = 30;
+    block7->y = 70;
+    block7->x = 70;
 
-            if (framecounter == 10) {
-                framecounter = 0;
-                jack->frame++;
-                if (jack->frame == 3) {
-                    jack->frame = 0;
-                }
+    block8->x = 10;
+    block8->y = 10;
+
+    // sprite giocatore 1
+    int orientamento1 = 0;
+    int spostamentox = 0;
+    int spostamentoy = 0;
+
+    int conta = 0;
+
+    int shipVerde_x = 50;
+    int shipVerde_y = 50;
+
+    while(!isMousePressed()) {
+
+        conta++;
+
+        /*
+            INIZIO GESTIONE TEST CON BLOCK 7
+
+        */
+
+
+
+        if (conta > 10) {
+            disable_bob(block7);
+        }
+
+        if (conta > 20) {
+            enable_bob(block7);
+            conta = 0;
+        }
+
+        if (checkJoystick_horiz(JOY1)) {
+            if (checkJoystick_horiz(JOY1) == JOY_LEFT) {
+                block7->x--;
             }
-
-
-            if (x == 90) {
-                remove_bob(dino);
+            if (checkJoystick_horiz(JOY1) == JOY_RIGHT) {
+                block7->x++;
             }
-
-            if (x < 90) {
-                dino->x = x;
-                dino->y = 20;
+        } 
+        
+        if (checkJoystick_vert(JOY1)) {
+            if (checkJoystick_vert(JOY1) == JOY_UP) {
+                block7->y--;
             }
+            if (checkJoystick_vert(JOY1) == JOY_DOWN) {
+                block7->y++;
+            }
+        } 
 
-            dino2->x = x;
-            dino2->y = x;
 
-            draw_bobs(bitplanes);
+        // Controllo se il block7 è in collisione con il block3
 
-            switchBuffers(bitplanes,&copperlist[BPL1PTH_VALUE_IDX],5,GRAPHICS_BPLS_SIZE);
+        if (checkCollision(block7,block3)) {
+            custom.color[0] = 0xf000;
+            custom.color[1] = 0xf000;
+            custom.color[2] = 0xf000;
+            custom.color[3] = 0xf000;
+            custom.color[4] = 0xf000;
+            custom.color[5] = 0xf000;
+            custom.color[6] = 0xf000;
+            custom.color[7] = 0xf000;
+            custom.color[8] = 0xf000;
+            custom.color[9] = 0xf000;
+            custom.color[10] = 0xf000;
 
-            wait_vblank();
-            
-            waitfire();
+            playsound(udeath,310,63,AUD2);
+        }
+
+        /*
+            FINE GESTIONE TEST CON BLOCK 7
+        */
+
+
+
+
+        block1->x++;
+        if (block1->x > 320-16) {
+            block1->x = 0;
+        }
+        
+        block2->x++;
+        if (block2->x > 320-16) {
+            block2->x = 0;
+        }
+
+        block3->x++;
+        if (block3->x > 320-16) {
+            block3->x = 0;
+        }
+
+        block4->x++;
+        if (block4->x > 320-16) {
+            block4->x = 0;
+        }
+
+        block5->x++;
+        if (block5->x > 320-16) {
+            block5->x = 0;
+        }
+
+        block6->x++;
+        if (block6->x > 320-16) {
+            block6->x = 0;
+        }
+
+        if (checkJoystick_horiz(JOY1)) {
+            if (checkJoystick_horiz(JOY1) == JOY_LEFT) {
+                spostamentox--;
+                orientamento1 = 0;
+            }
+            if (checkJoystick_horiz(JOY1) == JOY_RIGHT) {
+                spostamentox++;
+                orientamento1 = 1;
+            }
+        } else {
+            if (spostamentox > 0) {
+                spostamentox--;
+            } else if (spostamentox < 0) {
+                spostamentox++;
+            }
+        }
+        
+        if (checkJoystick_vert(JOY1)) {
+            if (checkJoystick_vert(JOY1) == JOY_UP) {
+                spostamentoy -= 1;
+            }
+            if (checkJoystick_vert(JOY1) == JOY_DOWN) {
+                spostamentoy += 1;
+            }
+        } else {
+            if (spostamentoy > 0) {
+                spostamentoy--;
+            } else if (spostamentoy < 0) {
+                spostamentoy++;
+            }
+        }
+
+        // Gestione accelerazione massima
+        if (spostamentox == 9) {
+            spostamentox = 8;
+        }
+        if (spostamentoy == 9) {
+            spostamentoy = 8;
+        }
+        if (spostamentox == -9) {
+            spostamentox = -8;
+        }
+        if (spostamentoy == -9) {
+            spostamentoy = -8;
+        }
+
+        ship_x += spostamentox/2;
+        ship_y += spostamentoy/2;
+
+        // Gestione margini di schermo
+        if (ship_x < 0) {
+            ship_x = 0;
+            spostamentox=0;
+        }
+        if (ship_x > 320-16) {
+            ship_x = 320-16;
+            spostamentox=0;
+        }
+        if (ship_y < 0) {
+            ship_y = 0;
+            spostamentoy=0;
+        }
+        if (ship_y > 256-14) {
+            ship_y = 256-14;
+            spostamentoy = 0;
+        }
+
+        if (orientamento1 == 0) {
+            set_sprite_pos(redShipLeft, ship_x, ship_y, ship_height);
+            set_sprite_pos(&redShipLeft[30], ship_x, ship_y, ship_height);
+            point_sprite_number(0,redShipLeft);
+            point_sprite_number(1,&redShipLeft[30]);
+        } else {
+            set_sprite_pos(redShipRight, ship_x, ship_y, ship_height);
+            set_sprite_pos(&redShipRight[30], ship_x, ship_y, ship_height);
+            point_sprite_number(0,redShipRight);
+            point_sprite_number(1,&redShipRight[30]);
+        }
+        
+        // Prova collisione sprite / playfield
+        if (custom.clxdat & 0x20) {     // Collisione
+            //set_sprite_pos(greenShipRight, 320-16, 0, ship_height);
+            //set_sprite_pos(&greenShipRight[30], 320-16, 0, ship_height);
+            playsound(bang,160,63,AUD1);
+        } else {
+            //set_sprite_pos(greenShipRight, 0, 0, ship_height);
+            //set_sprite_pos(&greenShipRight[30], 0, 0, ship_height);
+        }
+
+
+        set_sprite_pos(greenShipRight, shipVerde_x, shipVerde_y, ship_height);
+        set_sprite_pos(&greenShipRight[30], shipVerde_x, shipVerde_y, ship_height);
+
+        shipVerde_x += getMouse0HorizMovement();
+        shipVerde_y += getMouse0VertMovement();
+
+        draw_bobs();
+
+        switchBuffers();
+
+        wait_vblank();
+        
+
     }
-    
-    waitmouse();  // replace with logic
-    
 
-    free_bitplanes(bitplanes);
+    custom.dmacon = DMAF_AUD0 | DMAF_AUD1 | DMAF_AUD2 | DMAF_AUD3;
+
+
+    //waitmouse();
+    
+    uninstallVertbInterrupt();
+
+    free_bitplanes(screen.bitplanes);
 
     free_all_bobs();
+
+    free_all_sounds();
+
+    free_animation(anim_block8);
    
     reset_display();
-    //FreeMem(normal_block,BLOCK_SIZE);
 
+    
+
+    
     return 0;
 }

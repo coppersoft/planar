@@ -1,0 +1,12 @@
+#ifndef _VBLANK_
+#define _VBLANK_
+
+#include <clib/exec_protos.h>
+
+//static volatile ULONG *custom_vposr = (volatile ULONG *) 0xdff004;
+
+//void wait_vblank();
+
+void wait_vblank();
+
+#endif
