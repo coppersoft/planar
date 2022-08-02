@@ -36,8 +36,10 @@ void point_sprite_number(USHORT sprnum, UWORD* sprite_data) {
 
     sprXpth += sprnum*4;
 
-    sprXpth[0] = ((ULONG)sprite_data >> 16) & 0xffff;
-    sprXpth[2] = (ULONG)sprite_data & 0xffff;
+    point_sprite(sprXpth,sprite_data);
+
+    //sprXpth[0] = ((ULONG)sprite_data >> 16) & 0xffff;
+    //sprXpth[2] = (ULONG)sprite_data & 0xffff;
 }
 
 
