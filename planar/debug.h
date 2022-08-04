@@ -5,4 +5,6 @@
 
 void wait(int sec);
 
+void printCopperlist(UWORD* copperlist);
+
 #endif
